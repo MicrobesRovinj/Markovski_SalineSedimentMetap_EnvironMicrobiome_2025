@@ -1,0 +1,112 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Font
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Set font encoding to T1 (8-bit encoding, 256 glyphs) 
+% (improved text handling, especially with non-English
+% languages and text containing special characters)
+\usepackage[T1]{fontenc}
+
+% Set font to URW Nimbus Roman
+% (Times New Roman alternative)
+\usepackage{mathptmx}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Typsetting
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Include the package containing commands for page orientation
+\usepackage{pdflscape}
+% Create a new custom command for starting a landscape block
+\newcommand{\blandscape}{\begin{landscape}}
+% Create a new custom command for ending a landscape block
+\newcommand{\elandscape}{\end{landscape}}
+
+% Include package providing fine-tuned typographic enhancements
+\usepackage{microtype}
+
+% Supress hyphenation
+\usepackage[none]{hyphenat}
+
+% Include package for setting spacing between lines
+\usepackage{setspace}
+% Set line spacing
+\doublespacing
+
+% Indent first paragraph of each section (including chapters)
+\usepackage{indentfirst}
+
+% Set vertical space between paragraphs
+\setlength{\parskip}{1em}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Line numbers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Include package for line numbering
+\usepackage{lineno}
+% Set font style and size of line numbers
+\renewcommand{\linenumberfont}{\normalfont\tiny}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Figures and tables
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Include package enhancing figure and table placement
+% (provides "H" placement specifier forcing the float to
+% appear exactly where it is defined)
+\usepackage{float}
+
+% Include package used to create tables with cells spanning multiple rows
+\usepackage{multirow}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Captions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Use a period as separator between the label and the caption text,
+% and make the label bold
+\usepackage[labelsep=space, labelfont=bf]{caption}
+% Set caption text to be justified
+\captionsetup{justification=justified}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Referencing
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Include the package xr (external references) to allow
+% referencing labels from another file
+\usepackage{xr}
+% Specify the name of the file used for additional
+% referencing and define the prefix for the labels
+% from the external document
+\externaldocument[supp-]{supplementary}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Measurement units
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Include the package that facilitates consistent formatting
+% of scientific units and numbers
+\usepackage{siunitx}
+% Define unit \molar as moles per cubic decimeter
+\DeclareSIUnit\molar{\mole\per\cubic\deci\metre}
+% Define unit \Molar as small caps "M"  
+\DeclareSIUnit\Molar{\textsc{m}}
+% Define unit \cells as the text "cells"
+\DeclareSIUnit\cells{\text{cells}}
+% Define unit \litre as lowercase "l"
+\DeclareSIUnit\litre{l}
+% Define label \vV as v/v
+\DeclareSIUnit{\vV}{v/v}
+% Define label \wW as w/w
+\DeclareSIUnit{\wW}{w/w}
+% Define unit \bp as bp
+\DeclareSIUnit{\bp}{bp}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chemical formulae
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Include package for typesetting chemical formulas
+\usepackage{chemformula}

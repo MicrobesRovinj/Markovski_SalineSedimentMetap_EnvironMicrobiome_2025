@@ -1,0 +1,121 @@
+ID	msms_raw	date	station	depth_(cm)	layer	decay_roots
+MM_1	MK1.raw	12.07.2017	SN	0-1	top	before
+MM_2	MK2.raw	12.07.2017	SN	2-3	upper middle	before
+MM_3	MK3.raw	12.07.2017	SN	4-5	lower middle	before
+MM_4	MK4.raw	12.07.2017	SN	7-8	bottom	before
+MM_5	MK5.raw	12.07.2017	SCy	0-1	top	before
+MM_6	MK6.raw	12.07.2017	SCy	2-3	upper middle	before
+MM_7	MK7.raw	12.07.2017	SCy	4-5	lower middle	before
+MM_8	MK8.raw	12.07.2017	SCy	7-8	bottom	before
+MM_9	MK9_210507131103.raw	09.08.2017	SN	0-1	top	before
+MM_10	MK10.raw	09.08.2017	SN	2-3	upper middle	before
+MM_11	MK11.raw	09.08.2017	SN	4-5	lower middle	before
+MM_12	MK12.raw	09.08.2017	SN	7-8	bottom	before
+MM_13	MK13.raw	09.08.2017	SCy	0-1	top	before
+MM_14	MK14.raw	09.08.2017	SCy	2-3	upper middle	before
+MM_15	MK15.raw	09.08.2017	SCy	4-5	lower middle	before
+MM_16	MK16.raw	09.08.2017	SCy	7-8	bottom	before
+MM_17	MK17.raw	14.09.2017	SN	0-1	top	before
+MM_18	MK18.raw	14.09.2017	SN	2-3	upper middle	before
+MM_19	MK19.raw	14.09.2017	SN	4-5	lower middle	before
+MM_20	MK20.raw	14.09.2017	SN	7-8	bottom	before
+MM_21	21_15ul.raw	14.09.2017	SCy	0-1	top	before
+MM_22	22_11ul.raw	14.09.2017	SCy	2-3	upper middle	before
+MM_23	23_11ul.raw	14.09.2017	SCy	4-5	lower middle	before
+MM_24	24_19ul.raw	14.09.2017	SCy	7-8	bottom	before
+MM_25	25_7ul.raw	11.10.2017	SN	0-1	top	before
+MM_26	26_14ul.raw	11.10.2017	SN	2-3	upper middle	before
+MM_27	27_23ul.raw	11.10.2017	SN	3-4	lower middle	before
+MM_28	28_25ul.raw	11.10.2017	SN	7-8	bottom	before
+MM_29	29_16ul.raw	11.10.2017	SCy	0-1	top	before
+MM_30	30_5ul.raw	11.10.2017	SCy	2-3	upper middle	before
+MM_31	31_11ul.raw	11.10.2017	SCy	3-4	lower middle	before
+MM_32	32_8ul.raw	11.10.2017	SCy	7-8	bottom	before
+MM_33	33_16ul.raw	22.11.2017	SN	0-1	top	before
+MM_34	34_18ul.raw	22.11.2017	SN	2-3	upper middle	before
+MM_35	35_24ul.raw	22.11.2017	SN	4-5	lower middle	before
+MM_36	36_25ul.raw	22.11.2017	SN	7-8	bottom	before
+MM_37	37_8ul.raw	22.11.2017	SCy	0-1	top	before
+MM_38	38_9ul.raw	22.11.2017	SCy	2-3	upper middle	before
+MM_39	39_12ul.raw	22.11.2017	SCy	4-5	lower middle	before
+MM_40	40_17ul.raw	22.11.2017	SCy	7-8	bottom	before
+MM_41	41_25ul.raw	13.12.2017	SN	0-1	top	before
+MM_42	42_21ul.raw	13.12.2017	SN	2-3	upper middle	before
+MM_43	43_25ul.raw	13.12.2017	SN	4-5	lower middle	before
+MM_44	44_25ul.raw	13.12.2017	SN	7-8	bottom	before
+MM_45	45_23ul.raw	13.12.2017	SCy	0-1	top	before
+MM_46	46_10ul.raw	13.12.2017	SCy	2-3	upper middle	before
+MM_47	47_12ul.raw	13.12.2017	SCy	4-5	lower middle	before
+MM_48	48_17ul.raw	13.12.2017	SCy	7-8	bottom	before
+MM_49	49_11ul.raw	12.02.2018	SN	0-1	top	before
+MM_50	50_20ul.raw	12.02.2018	SN	2-3	upper middle	before
+MM_51	51_25uL.raw	12.02.2018	SN	4-5	lower middle	before
+MM_52	52_25uL.raw	12.02.2018	SN	7-8	bottom	before
+MM_53	53_9c3uL.raw	12.02.2018	SCy	0-1	top	before
+MM_54	54_3c1uL.raw	12.02.2018	SCy	2-3	upper middle	before
+MM_55	55_3c8uL.raw	12.02.2018	SCy	4-5	lower middle	before
+MM_56	56_4c3uL.raw	12.02.2018	SCy	7-8	bottom	before
+MM_57	run_failure	26.03.2018	SN	0-1	top	after
+MM_58	58_6c8uL.raw	26.03.2018	SN	2-3	upper middle	after
+MM_59	59_12c9uL.raw	26.03.2018	SN	5-6	lower middle	after
+MM_60	60_10c3uL.raw	26.03.2018	SN	7-8	bottom	after
+MM_61	61_4c4uL.raw	26.03.2018	SCy	0-1	top	after
+MM_62	62_3c9uL.raw	26.03.2018	SCy	2-3	upper middle	after
+MM_63	run_failure	26.03.2018	SCy	5-6	lower middle	after
+MM_64	64_5c9uL.raw	26.03.2018	SCy	7-8	bottom	after
+MM_65	65_7c0uL.raw	23.04.2018	SN	0-1	top	after
+MM_66	66_24c5uL.raw	23.04.2018	SN	2-3	upper middle	after
+MM_67	67_6c7uL.raw	23.04.2018	SN	4-5	lower middle	after
+MM_68	68_13c3uL.raw	23.04.2018	SN	7-8	bottom	after
+MM_69	69_8c0uL.raw	23.04.2018	SCy	0-1	top	after
+MM_70	70_4c7uL.raw	23.04.2018	SCy	2-3	upper middle	after
+MM_71	71_6c2uL.raw	23.04.2018	SCy	4-5	lower middle	after
+MM_72	72_7c3uL.raw	23.04.2018	SCy	7-8	bottom	after
+MM_73	73_5uL.raw	21.05.2018	SN	0-1	top	after
+MM_74	74_7c3uL.raw	21.05.2018	SN	2-3	upper middle	after
+MM_75	75_6c2uL.raw	21.05.2018	SN	3-4	lower middle	after
+MM_76	76_14c3uL.raw	21.05.2018	SN	7-8	bottom	after
+MM_77	77_5c6uL.raw	21.05.2018	SCy	0-1	top	after
+MM_78	78_17c8uL.raw	21.05.2018	SCy	2-3	upper middle	after
+MM_79	79_4c1uL.raw	21.05.2018	SCy	3-4	lower middle	after
+MM_80	80_5c3uL.raw	21.05.2018	SCy	7-8	bottom	after
+MM_81	81_4c3uL.raw	18.06.2018	SN	0-1	top	after
+MM_82	82_5c5uL.raw	18.06.2018	SN	2-3	upper middle	after
+MM_83	83_7c2uL.raw	18.06.2018	SN	4-5	lower middle	after
+MM_84	84_6c8uL.raw	18.06.2018	SN	7-8	bottom	after
+MM_85	85_7c2uL.raw	18.06.2018	SCy	0-1	top	after
+MM_86	86_7c3uL.raw	18.06.2018	SCy	2-3	upper middle	after
+MM_87	87_6c7uL.raw	18.06.2018	SCy	4-5	lower middle	after
+MM_88	88_6c0uL.raw	18.06.2018	SCy	7-8	bottom	after
+MM_89	89_5c1uL.raw	09.07.2018	SN	0-1	top	after
+MM_90	90_4c4uL.raw	09.07.2018	SN	2-3	upper middle	after
+MM_91	91_4c7uL.raw	09.07.2018	SN	4-5	lower middle	after
+MM_92	92_8c3uL.raw	09.07.2018	SN	7-8	bottom	after
+MM_93	93_5c8uL.raw	09.07.2018	SCy	0-1	top	after
+MM_94	94_6c2uL.raw	09.07.2018	SCy	2-3	upper middle	after
+MM_95	95_8c1uL.raw	09.07.2018	SCy	4-5	lower middle	after
+MM_96	96_8c6uL.raw	09.07.2018	SCy	7-8	bottom	after
+MM_97	97_4c7uL.raw	08.08.2018	SN	0-1	top	after
+MM_98	98_6c9uL.raw	08.08.2018	SN	2-3	upper middle	after
+MM_99	99_4c4uL.raw	08.08.2018	SN	4-5	lower middle	after
+MM_100	100_7c3uL.raw	08.08.2018	SN	7-8	bottom	after
+MM_101	101_4c6uL.raw	08.08.2018	SCy	0-1	top	after
+MM_102	102_3c6uL.raw	08.08.2018	SCy	2-3	upper middle	after
+MM_103	103_6c0uL.raw	08.08.2018	SCy	4-5	lower middle	after
+MM_104	104_14c7uL.raw	08.08.2018	SCy	7-8	bottom	after
+MM_105	105_9c4uL.raw	03.09.2018	SN	0-1	top	after
+MM_106	106_12c3uL.raw	03.09.2018	SN	2-3	upper middle	after
+MM_107	107_20c7uL.raw	03.09.2018	SN	4-5	lower middle	after
+MM_108	108_18c0uL.raw	03.09.2018	SN	7-8	bottom	after
+MM_109	109_4c6uL.raw	03.09.2018	SCy	0-1	top	after
+MM_110	110_5c4uL.raw	03.09.2018	SCy	2-3	upper middle	after
+MM_111	111_7c0uL.raw	03.09.2018	SCy	4-5	lower middle	after
+MM_112	112_5c2uL.raw	03.09.2018	SCy	7-8	bottom	after
+MM_113	113_6c0uL.raw	04.10.2018	SN	0-1	top	after
+MM_114	114_9c6uL.raw	04.10.2018	SN	2-3	upper middle	after
+MM_115	115_20c9uL.raw	04.10.2018	SN	4-5	lower middle	after
+MM_116	116_11c6uL.raw	04.10.2018	SN	7-8	bottom	after
+MM_117	117_7c5uL.raw	04.10.2018	SCy	0-1	top	after
+MM_118	118_4c9uL.raw	04.10.2018	SCy	2-3	upper middle	after
+MM_119	119_7c8uL.raw	04.10.2018	SCy	4-5	lower middle	after
+MM_120	120_8c9uL.raw	04.10.2018	SCy	7-8	bottom	after

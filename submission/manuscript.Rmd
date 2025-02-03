@@ -1,0 +1,1081 @@
+---
+title: "**Influence of seagrass decline on the metabolic profile of sediment microbial communities**"
+documentclass: article
+geometry: margin = 1.0in
+fontsize: 12 pt
+bibliography: ["references.bib", "packages.bib"]
+csl: citation_style.csl # Get themes at https://github.com/citation-style-language/styles
+output:
+  bookdown::pdf_document2:
+    includes:
+      in_header: preamble.tex
+      before_body: before_body_manuscript.tex
+    keep_tex: true
+    latex_engine: pdflatex
+    toc: false
+    number_sections: false
+---
+
+```{r, knitr_settings, eval = TRUE, echo = FALSE, cache = FALSE, results = "hide"}
+
+################################################################################
+# Change the default values of chunk options
+################################################################################
+
+opts_chunk$set("tidy" = TRUE)
+opts_chunk$set("echo" = FALSE)
+opts_chunk$set("eval" = TRUE)
+opts_chunk$set("warning" = FALSE)
+opts_chunk$set("cache" = FALSE)
+opts_chunk$set("message" = FALSE)
+
+################################################################################
+# Define a custom hook function to format output from inline R expressions
+################################################################################
+
+# Define a custom hook function to format output from inline R expressions
+# (This enables number formatting during inline R code execution.)
+inline_hook <- function(x){
+	
+  print(x)
+  
+	if(is.list(x)){
+		x <- unlist(x)
+	}
+  
+	if(is.numeric(x)){
+		if(abs(x - round(x)) < .Machine$double.eps ^ 0.5){
+			paste(format(x, big.mark = ',', digits = NULL, scientific = FALSE))
+		} else {
+			paste(format(x, big.mark = ',', digits = 1, nsmall = 1, scientific = FALSE))
+		}
+	} else {
+    	paste(x)
+	  }
+  }
+
+# Register the custom inline hook
+knitr::knit_hooks$set(inline = inline_hook)
+
+################################################################################
+# Create and write bib entries for R and currently loaded R packages
+################################################################################
+
+# Obtain package names and versions using custom function
+packages <- r_package_version(file_path = ".Rprofile")
+
+# Remove package stats
+packages <- packages %>%
+  filter(name != "stats")
+
+# Create and write bib entries for R and currently loaded R packages
+# (add the base package to the list of packages so that R can be cited)
+write_bib(x = c("base", packages$name), file = "submission/packages.bib")
+
+# Repair known issues with capitalisation in package titles
+system("sed -i 's/^\\(  title = {.*\\) R\\([ }:,]\\)\\(.*\\)/\\1 {R}\\2\\3/g' submission/packages.bib")
+system("sed -i 's/^\\(  title = {\\)\\(knitr\\|rmarkdown\\|bookdown\\|tinytex\\|vegan\\|taxonomizr\\|ggpattern\\|cowplot\\|rlang\\|ggsignif\\|tidyverse\\)\\(:.*\\)/\\1{\\2}\\3/g' submission/packages.bib")
+system("sed -i 's/^\\(  title = {.*\\)Markdown\\(.*\\)/\\1{Markdown}\\2/g' submission/packages.bib")
+system("sed -i 's/^\\(  title = {.*\\)TeX Live\\(.*\\)/\\1{TeX Live}\\2/g' submission/packages.bib")
+
+# Convert book titles to title case for book and in-collection entries
+system("sed -i 's/^\\(  title = {{bookdown}: Authoring Books and Technical Documents with {R} {Markdown}},\\)/  title = {{{bookdown}: Authoring Books and Technical Documents With {R} {Markdown}}},/g' submission/packages.bib")
+system("sed -i 's/^\\(  booktitle = {Implementing Reproducible Computational Research},\\)/  booktitle = {{Implementing Reproducible Computational Research}},/g' submission/packages.bib")
+system("sed -i 's/^\\(  title = {Dynamic Documents with {R} and knitr},\\)/  title = {{Dynamic Documents With {R} and knitr}},/g' submission/packages.bib")
+system("sed -i 's/^\\(  title = {R {Markdown}: The Definitive Guide},\\)/  title = {{R {Markdown}: The Definitive Guide}},/g' submission/packages.bib")
+system("sed -i 's/^\\(  title = {R {Markdown} Cookbook},\\)/  title = {{R {Markdown} Cookbook}},/g' submission/packages.bib")
+
+# Correct journal/repository names
+system("sed -i 's/^  journal = {PsyArxiv},/journal = {PsyArXiv},/g' submission/packages.bib")
+
+# Add journal abbreviations
+system("sed -i 's/^\\(  journal = {Journal of Open Source Software},\\)/\\1\\
+  shortjournal = {J. Open Source Softw.},/g' submission/packages.bib")
+
+# Remove urls
+system("sed -i '/^  url =/d' submission/packages.bib")
+
+################################################################################
+# Retrieve citation keys for the loaded R packages
+################################################################################
+
+# Remove package tidyverse as it is cited separately
+packages <- packages %>%
+  filter(name != "tidyverse")
+
+# Retrieve bib entries for the R packages
+bib_entries <- write_bib(x = packages$name)
+
+# Unlist the bib entries
+bib_entries <- unlist(x = bib_entries)
+
+# Retrieve the citation keys for loaded R packages
+citation_keys <- tibble(citation_key = bib_entries) %>%
+  # Filter rows containing citation keys
+  filter(str_detect(string = citation_key, pattern = "@")) %>%
+  # Extract the citation key from the string
+  mutate(citation_key = str_replace(string = citation_key, pattern = "@.*\\{(.*),", replacement = "@\\1"))
+
+```
+
+```{r, input}
+
+################################################################################
+# Metagenomes
+################################################################################
+
+# Load the change of the number of sequences throughout
+# metaproteomic analysis
+seq_num <- read_tsv(file = "data/raw/metagenomes_seq_num.tsv")
+
+# Load assembly statistics
+contig_statistics <- read_tsv(file = "data/raw/metagenomes_contig_statistics.tsv")
+contig_statistics <- contig_statistics %>%
+  mutate(sample = str_replace(string = filename, pattern = ".contigs.fa$", "")) %>%
+  select(-filename)
+
+# Load the number of annotated CDSs
+annotated_cds_num <- read_tsv(file = "data/raw/metagenomes_annotated_cds_num.tsv")
+
+# Join the loaded data into one table
+metagenomes <- inner_join(x = seq_num, y = contig_statistics, by = c("sample" = "sample")) %>%
+  inner_join(y = annotated_cds_num, by = c("sample" = "sample"))
+
+# Replace IMGM sequencing ID with DNA sample ID, add sampling site, layer, depth, and date,
+# and format the sampling date
+metagenomes <- metagenomes %>%
+  mutate(sample = case_when(sample == "19181-0005" ~ "356",
+                            sample == "19181-0006" ~ "358",
+                            sample == "20151-0003" ~ "360",
+                            sample == "20151-0004" ~ "362",
+                            TRUE                  ~ sample)) %>%
+  mutate(station = case_when(sample == "356" | sample == "358" ~ "Vegetated",
+                             sample == "360" | sample == "362" ~ "Nonvegetated",
+                             TRUE                              ~ sample), .after = sample) %>%
+  mutate(layer_depth = case_when(sample == "356" | sample == "360" ~ "Top (0 - 1 cm)",
+                                 sample == "358" | sample == "362" ~ "Lower Middle (4 - 5 cm)",
+                                 TRUE                              ~ sample), .after = station) %>%
+  mutate(date = as.Date("08.08.2018", "%d.%m.%Y"), .after = station) %>%
+  mutate(date = str_replace(string = format(date, "%d %B %Y"), pattern = "^0", replacement = ""))
+
+# Select columns
+metagenomes <- metagenomes %>%
+  select(sample, station, layer_depth, date, rawF, n_contigs, ctg_N50, ctg_L50, cds_prot, annotated_cds)
+
+# Format the numbers in the table
+metagenomes <- metagenomes %>%
+  mutate(across(.cols = c(rawF, n_contigs, ctg_N50, cds_prot, annotated_cds),
+                .fns = ~ format(x = .x, big.mark = ",")))
+
+################################################################################
+# Metaproteomic data
+################################################################################
+
+# Load annotated metaproteomic data containing NCBI taxonomy ID
+metaproteomic_data <- read_tsv(file = "data/processed/metaproteomic_data.tsv")
+
+# Remove entries that are not present (NA) in any of the samples
+metaproteomic_data <- metaproteomic_data %>%
+  filter(!if_all(.cols = starts_with("MM_"), .fns = ~ is.na(.)))
+
+################################################################################
+# Formatted metaproteomic data
+################################################################################
+
+# Load formatted metaproteomic data
+formatted_metaproteomic_data <- read_tsv(file = "data/processed/formatted_metaproteomic_data.tsv")
+
+################################################################################
+# Observed number of proteins and exponential of the Shannon diversity index
+################################################################################
+
+# Load the number of observed proteins and the exponential of the Shannon
+# diversity index data
+load(file = "results/numerical/alpha.Rdata")
+
+################################################################################
+# ANOSIM
+################################################################################
+
+# Load ANOSIM results for all proteins analysed
+load(file = "results/numerical/anosim_all.Rdata")
+
+# Load ANOSIM results for proteins in the COG category C
+load(file = "results/numerical/anosim_C.Rdata")
+
+################################################################################
+# COG
+################################################################################
+
+# Load the number of proteins in each COG category
+load(file = "results/numerical/cog_number.Rdata")
+
+# Load the NAAFs in each COG category
+load(file = "results/numerical/cog_naaf.Rdata")
+
+################################################################################
+# KEGG KO
+################################################################################
+
+# Load the proportion of KO entries within the functional
+# COG category C
+load(file = "results/numerical/cog_c_kegg.Rdata")
+
+################################################################################
+# NAAFs metaproteomic data
+################################################################################
+
+# Load NAAFs metaproteomic data
+naaf <- read_tsv(file = "data/processed/naaf.tsv")
+
+################################################################################
+# Metadata
+################################################################################
+
+# Load metadata
+metadata <- read_tsv(file = "data/raw/metadata.tsv")
+
+################################################################################
+# KO entry names
+################################################################################
+
+# Load the KO entry names
+ko_names <- read_tsv(file = "data/raw/ko_names.tsv", col_names = c("KEGG_ko", "KO_name"))
+
+################################################################################
+# Enzymes involved in fermentation
+################################################################################
+
+# Load the data for KEGG KO entries involved in fermentation
+fermentation <- read_tsv(file = "data/raw/fermentation.tsv", col_names = c("name", "enzyme_product", "KEGG_ko", "KO_name"))
+
+################################################################################
+# Enzymes involved in dissimilatory sulphate reduction
+################################################################################
+
+# Load the data for KEGG KO entries involved in dissimilatory sulphate
+# reduction
+dsr <- read_tsv(file = "data/raw/dsr.tsv", col_names = c("name", "KEGG_ko", "KO_name"))
+
+```
+\vspace{\fill}
+
+Marsej Markovski^1^, Mirjana Najdek^1^, Zihao Zhao^2^, Gerhard J. Herndl^2,3^, and Marino Korlević^1\*^
+
+1.  Centre for Marine Research, Ruđer Bošković Institute, Croatia
+
+2.  Department of Functional and Evolutionary Ecology, University of Vienna, Austria
+
+3.  Department of Marine Microbiology and Biogeochemistry, Royal Netherlands Institute for Sea Research (NIOZ), Utrecht University, The Netherlands
+
+^\*^To whom correspondence should be addressed:
+
+Marino Korlević
+
+G. Paliaga 5, 52210 Rovinj, Croatia
+
+Tel.: +385 52 804 768
+
+e-mail: [marino.korlevic\@irb.hr](mailto:marino.korlevic@irb.hr){.email}
+
+```{=latex}
+
+\linenumbers
+\sisetup{mode=text}
+\setlength\parindent{24pt}
+\newpage
+
+```
+
+# Abstract
+
+```{=latex}
+
+{\setlength{\parskip}{0pt}
+
+```
+\noindent
+**Background** Seagrass meadows are highly productive ecosystems that are considered hotspots for carbon sequestration. The decline of seagrass meadows of various species has been documented worldwide, including that of *Cymodocea nodosa*, a widespread seagrass in the Mediterranean Sea. To assess the influence of seagrass decline on the metabolic profile of sediment microbial communities, metaproteomes from two sites, one without vegetation and one with a declining *Cymodocea nodosa* meadow, were characterised at monthly intervals from July 2017 to October 2018.
+
+\noindent
+**Results** The differences in the metabolic profile observed between the vegetated and nonvegetated sediment before the decline were more pronounced in the deeper parts of the sediment and disappeared with the decay of the roots and rhizomes. During the decline, the protein richness and diversity of the metabolic profile of the microbial communities inhabiting the nonvegetated sediment became similar to those observed for the vegetated communities. Temporal shifts in the structure of the metabolic profile were only observed in the nonvegetated sediment and  were also more pronounced in the deeper parts of the sediment. The assessment of the dynamics of proteins involved in the degradation of organic matter, such as ABC transporters, fermentation-mediating enzymes, and proteins involved in dissimilatory sulphate reduction, reflected the general dynamics of the metabolic profile.
+
+\noindent
+**Conclusions** Overall, the metabolic profile of the microbial communities inhabiting the nonvegetated sediment was influenced by the decline of seagrass, with stronger shifts observed in the deeper parts of the sediment.
+
+```{=latex}
+
+}
+
+```
+\noindent
+**Keywords** sediment microbial communities, *Cymodocea nodosa*, seagrass meadow decline, northern Adriatic Sea, metaproteomics, microbial metabolic profile
+
+\newpage
+
+# Background
+
+Marine sediments cover around 70 \si{\percent} of the Earth's surface [@Hoshino2020]. The biomass in these habitats consists mainly of prokaryotes, whose richness and abundance are comparable to that in the water column [@Nealson1997; @Hoshino2020; @Kallmeyer2012]. The main factor determining the abundance and activity of these microorganisms is the availability of organic matter [@Kallmeyer2012; @Petro2017; @Roy2012]. Coastal waters supply large amounts of organic matter to the underlying sediments, which leads to the consumption of oxygen in the upper centimetres of the sediment and causes anoxic conditions in the deeper sediment [@Orsi2018]. The complete mineralisation of organic compounds in these anoxic environments requires complex microbial interactions [@Jorgensen2000; @Arndt2013; @Suominen2021]. The stepwise degradation of organic matter begins with the breakdown of complex organic polymers such as carbohydrates or proteins by extracellular enzymes that can be released into solution or remain associated with the cell. These enzymes convert high-molecular-weight organic matter to substrates that are small enough to be transported into the cell [@Arnosti2011]. Part of these hydrolytic products are fermented to short-chain fatty acids (SCFAs) and alcohols that facilitate anaerobic microbial respiration, e.g. by sulphate-reducing bacteria or methanogens [@Arndt2013; @Suominen2021].
+
+Shallow coastal sediments colonised by seagrasses are considered a special type of habitat for marine prokaryotes [@Duarte2005]. Such areas are hotspots for microbial activity, as seagrasses enrich the sediment with organic matter by excreting organic carbon, trapping organic particles from the water column, and stabilising the sediment. In addition, the decomposition of seagrass leaves, roots, and rhizomes, which is particularly evident during the decline of the meadows, contributes to the enrichment of the sediment with organic matter [@Peduzzi1991; @Duarte2005; @Liu2017; @Trevathan-Tackett2020]. Consequently, microbial communities in seagrass sediments are metabolically more diverse and active than those inhabiting bare sediments [@Mohapatra2022]. Furthermore, taxonomic analyses showed differences between communities at vegetated and nonvegetated sites [@Cucio2016; @Zheng2019; @Alsaffar2020; @Sun2020; @Zhang2020; @Markovski2022] and indicated that microbial communities even differ with respect to the meadow edge [@Ettinger2017]. The few available studies on microbial community succession in seagrass sediments suggest changes in sulphate-reducing bacteria over time [@Smith2004], as well as community changes in response to nutrient availability [@Guevara2014] and seagrass restoration [@Bourque2015]. However, there is not much information on the response of sediment microbial communities to seagrass decline. About 19 \si{\percent} of seagrass meadows worldwide have been lost since 1880 [@Dunic2021]. A decline of *Cymodocea nodosa*, a widespread and common seagrass species throughout the Mediterranean Sea [@denHartog1970], has been observed [@Tuya2002; @Orth2006; @Tuya2014; @Fabbri2015], including in the northern Adriatic Sea [@Orlando-Bonaca2015; @Orlando-Bonaca2019; @Najdek2020]. In a previous study, we investigated the diversity and dynamics of sediment microbial communities during the decline of the seagrass species *C. nodosa* and found a notable compositional stability in response to such a major disturbance [@Markovski2022].
+
+In order to obtain a comprehensive overview of the microbial communities living in sediments colonised by seagrasses, methods that allow functional characterisation, such as metaproteomics, must be applied. This high-throughput "meta-omics" approach is emerging as an important tool for deciphering the key components that determine the function of microbial ecosystems [@Wilmes2015]. In addition, this approach has the potential to provide insights into the biogeochemical cycling in marine sediments and to assess the response of microbes to environmental change [@Saito2019]. Metaproteomics is closely linked to metagenomics, as genome information in combination with data on expressed proteins not only provides information on the functional potential of microbial populations, but also on which metabolism is active in an ecosystem [@Grossart2020]. Metaproteomics has already been used to analyse microbial metabolic processes in cold seeps [@Stokke2012; @Glass2014], diffuse hydrothermal venting [@Urich2014], mudflat aquaculture [@Lin2015], and chronically petroleum-polluted [@Bargiela2015] sediments. To our knowledge there are no metaproteomic studies on microbial communities in seagrass meadow sediments. The aim of the present study was to use a metaproteomic approach to characterise the metabolic profile of prokaryotic communities in *C. nodosa* meadow sediments and to determine the shifts in their metabolic profile when seagrass meadows decline.
+
+# Methods
+
+## Sampling
+
+Sediment sampling for DNA and protein isolation was performed as described in Markovski et al. (2022) [@Markovski2022]. For a detailed description of the sampling site, environmental conditions, and the decline of the *C. nodosa* meadow, see Najdek et al. (2020) [@Najdek2020]. In brief, sediment cores were collected from a declining *C. nodosa* meadow (vegetated site) in the Bay of Saline (\ang{45;7;5} N, \ang{13;37;20} E) in the northern Adriatic Sea. An adjacent area without seagrass (nonvegetated site) was also sampled. Samples were taken monthly from July 2017 to October 2018. The meadow began to decline in November 2017, and by the end of the study, only small patches of seagrass along the shoreline indicated its former existence. Prior to DNA and protein isolation, the sediment cores were cut into four sections, each 1 cm long: the top (0 – 1 cm), the bottom (7 – 8 cm), and two middle sections: upper middle (2 – 3 cm) and lower middle (3 – 6 cm; Supplementary Table \@ref(supp-tab:samples)).
+
+## DNA isolation
+
+Total DNA from each sediment section was isolated using a modified isolation protocol [@Pjevac2018] based on Zhou et al. (1996) [@Zhou1996] as described in Markovski et al. (2022) [@Markovski2022]. In brief, 2 \si{\gram} of sediment were weighed, avoiding roots and rhizomes in vegetated cores, mixed with the extraction buffer and proteinase K, and incubated by horizontal shaking at 37 \si{\degreeCelsius} for 30 \si{\minute}. After the addition of SDS, the mixture was incubated again by horizontal shaking at 65 \si{\degreeCelsius} for 60 \si{\minute}. The sediment particles were removed by centrifugation and the supernatant was extracted three times with an equal volume of chloroform:isoamyl alcohol (1:1). DNA precipitation was performed by adding isopropanol and incubating the mixture at 22 \si{\degreeCelsius} for 60 \si{\minute}. The DNA pellet obtained after the centrifugation step was washed twice with cold (\SI{-20}{\degreeCelsius}) 70 \si{\percent} ethanol, air-dried, and resuspended in 100 \si{\ul} of deionised water.
+
+## Metagenomics
+
+Due to the limited number of sediment metagenomes that could have been sequenced, we selected four DNA samples from Markovski et al. (2022) [@Markovski2022] collected in August 2018 from the top (0 – 1 cm) and lower middle (4 – 5 cm) layers of both the vegetated and nonvegetated sites (Supplementary Table \@ref(supp-tab:metagenomes)). These selected DNA samples were sent on dry ice to IMGM Laboratories (Martinsried, Germany) for metagenomic sequencing. The genomic DNA was purified using AMPure XP Beads (Beckman Coulter, USA) at a bead:DNA ratio of 1:1 (\si{\vV}) and quantified using the Qubit dsDNA HS Assay Kit (Thermo Fisher Scientific, USA). The integrity of the DNA was checked on a 1 \si{\percent} agarose gel. Metagenomic sequencing libraries were prepared from 100 or 300 \si{\nano\gram} of genomic DNA using the NEBNext Ultra II FS DNA Library Prep Kit for Illumina (New England Biolabs, USA) according to the manufacturer's protocol. Fragments of 500 – 700 \si{\bp} were selected using the AMPure XP Beads, enriched by PCR for 5 or 6 cycles, and quality controlled. The individual libraries generated from different DNA input samples were pooled and sequenced on an Illumina NovaSeq 6000 sequencing system (2 × 250 \si{\bp}).
+
+The sequences obtained were analysed on the Life Science Compute Cluster (LiSC; CUBE – Computational Systems Biology, University of Vienna). MEGAHIT (version 1.2.9) [@Li2015], with default settings, was used to assemble individual metagenomic libraries and putative genes were predicted from contigs longer than 200 \si{\bp} using Prodigal (version 2.6.3) [@Hyatt2010] in metagenome mode (-p meta). Predicted genes were functionally annotated using the eggNOG mapper (version 2.1.9) [@Cantalapiedra2021] with the eggNOG database (version 5.0.2) [@Huerta-Cepas2019]. Taxonomic classification was performed using the lowest common ancestor algorithm from DIAMOND (version 2.0.15) [@Buchfink2021] against the non-redundant NCBI database (NR). Phylogeny was determined using the top 10 \si{\percent} of hits with an e-value \< 1 × 10^-5^ (\-\-top 10). Sequence renaming and the calculation of metagenomic statistics were performed using the tools from BBTools (<https://jgi.doe.gov/data-and-tools/bbtools>). In total, metagenomic sequencing generated between `r min(metagenomes$rawF)` and `r max(metagenomes$rawF)` sequence pairs (Supplementary Table \@ref(supp-tab:metagenomes)). After the removal of low-quality reads, sequences were assembled into `r min(metagenomes$n_contigs)` to `r max(metagenomes$n_contigs)` contigs, with L50 ranging from `r min(metagenomes$ctg_L50)` to `r max(metagenomes$ctg_L50)` \si{\bp}. Coding sequence (CDS) prediction generated between `r min(metagenomes$cds_prot)` and `r max(metagenomes$cds_prot)` CDSs, while functional annotation resulted in `r min(metagenomes$annotated_cds)` to `r max(metagenomes$annotated_cds)` annotated CDSs.
+
+## Protein isolation
+
+The proteins were isolated from the same sediment sections that were used for DNA isolation [@Markovski2022]. The SDS-based lysis method with trichloroacetic acid (TCA) precipitation described in Chourey et al. (2010) [@Chourey2010] and modified by Hultman et al. (2015) [@Hultman2015] was used. To 5 \si{\gram} of sediment, 10 \si{\percent} (\si{\wW}) polyvinylpolypyrolidone (PVPP) was added. The mixture was suspended in 5 \si{\ml} protein extraction buffer (4 \si{\percent} SDS and 100 \si{\milli\Molar} Tris-HCl [pH 8.0]) and vortexed. After incubation in boiling water for 5 \si{\minute}, the samples were sonicated and incubated again in boiling water for 5 \si{\minute}. Sonication was performed using the Sonopuls HD 4100 probe sonicator (Bandelin, Germany) equipped with an UW 100 ultrasonic transducer and a TS 103 probe. The solution was sonicated at 75 \si{\percent} of the maximum amplitude (245 \si{\um}) for 2 \si{\minute} at an interval of 10 \si{\s} on and 10 \si{\s} off. The sediment particles were removed by centrifugation for 20 \si{\minute} at 4 \si{\degreeCelsius} and 4,500 × *g*. The supernatant was transferred to a clean tube and mixed with 1 \si{\Molar} dithiothreitol (DTT; final concentration 24 \si{\milli\Molar}). The proteins were precipitated with cold (\SI{4}{\degreeCelsius}) 100 \si{\percent} TCA (final concentration 20 \si{\percent}) overnight at \SI{-20}{\degreeCelsius}. The protein pellet was obtained by centrifugation for 40 \si{\minute} at 4 \si{\degreeCelsius} and 10,000 × *g*. The obtained pellet was washed three times with cold (\SI{-20}{\degreeCelsius}) acetone and centrifuged after each washing step for 5 \si{\minute} at 4 \si{\degreeCelsius} and 20,000 × *g*. The pellet was transferred to a clean 1.5 \si{\milli\liter} tube during the first washing step. The dried pellet was stored at \SI{-80}{\degreeCelsius} until further processing. In total, `r length(x = metadata$ID)` protein samples were isolated.
+
+## Metaproteomics
+
+The filter-aided sample preparation (FASP) [@Wisniewski2009] procedure was used to perform trypsin digestion. Isolated proteins were processed using the FASP Protein Digestion Kit (Expedeon, UK) according to the manufacturer's instructions, with minor modifications [@Korlevic2021a]. Briefly, the protein pellet was solubilised in the urea sample buffer included in the kit, amended with DTT, and centrifuged to remove larger particles. The trypsin digestion was performed on the column filter overnight at 37 \si{\degreeCelsius} for 18 \si{\hour}. The resulting filtrate containing peptides was acidified to a final concentration of 1 \si{\percent} trifluoroacetic acid (TFA). Digested peptides were desalted using the Pierce C18 Tips (Thermo Fisher Scientific, USA) according to the manufacturer's instructions and sent to the Proteomics Facilities of the University of Vienna for mass spectrometry analysis.
+
+MS/MS spectra were obtained using a Q Exactive Hybrid Quadrupole-Orbitrap Mass Spectrometer (Thermo Fisher Scientific, USA) and searched against a protein database containing amino acid sequences of predicted CDSs from combined metagenomes that were sequenced and analysed as described above. MS/MS spectra were successfully generated for `r length(x = metadata$msms_raw[metadata$msms_raw != "run_failure"])` samples (Supplementary Table \@ref(supp-tab:samples)). Before the protein database search, the predicted CDSs were clustered at 90 \si{\percent} similarity using CD-HIT (version 4.6.8). Peptides were identified using the SEQUEST-HT engine and validated with Percolator, all within Proteome Discoverer (version 2.1; Thermo Fisher Scientific, USA). The probability of false peptide identification was reduced by applying the target-decoy approach. Only peptides with a false discovery rate \< 1 \si{\percent} were retained. Protein identification required at least two peptides, including one unique peptide. Quantification of the relative abundance of proteins was conducted using a chromatographic peak area-based label-free quantitative method [@Ryu2008; @Zhang2015], where the peak areas of unique peptides were summed and normalised to the normalised area abundance factor (NAAF). In total, `r nrow(metaproteomic_data)` different proteins were identified from the obtained MS/MS spectra. Of all identified proteins, `r filter(.data = metaproteomic_data, !is.na(eggNOG_OGs)) %>% nrow() / nrow(metaproteomic_data) * 100` \si{\percent} were annotated by the eggNOG database. To focus exclusively on microbial communities, only proteins classified as *Archaea* and *Bacteria* using the NCBI database were retained. As a precautionary measure, proteins that were not taxonomically classified as *Archaea* or *Bacteria* by the eggNOG database were also removed, leaving a total of `r nrow(formatted_metaproteomic_data)` proteins in the dataset.
+
+## Data analysis
+
+Data processing and visualisation were performed using R (version `r R.version$version.string %>% str_extract(pattern = "[0-9]+\\.[0-9]+\\.[0-9]+")`) [@R-base] combined with the tidyverse package (version `r as.character(packageVersion(pkg = "tidyverse"))`) [@tidyverse2019; @R-tidyverse] and several other packages [`r deframe(x = citation_keys) %>% paste0(collapse = "; ")`]. The Shannon diversity index was calculated using the function `diversity` from the vegan package (version `r as.character(packageVersion(pkg = "vegan"))`) [@R-vegan]. To express the diversity index in terms of the effective number of proteins, the exponential of the Shannon diversity index was calculated [@Jost2006]. Differences between the number of observed proteins, the exponential of the Shannon diversity index, and the NAAFs between sites, sediment layers, i.e., sections of sediment cores, and the period before and during the decay of *C. nodosa* roots and rhizomes were tested by applying the Mann-Whitney *U* test using the function `wilcox.test` [@R-base]. The Bonferroni correction was applied to solve the problem of multiple comparisons using the function `p.adjust` [@R-base]. Differences in the structure of the microbial metabolic profiles between sites, sediment layers, and the period before and during the decay of *C. nodosa* roots and rhizomes were tested on Bray-Curtis dissimilarities based on protein NAAFs by performing the Analysis of Similarities (ANOSIM) using the function `anosim` from the vegan package and 999 permutations [@R-vegan]. The grouping of samples into the period before and during the decay of roots and rhizomes was based on the decline of *C. nodosa* reported by Najdek et al. (2020) [@Najdek2020]. The sampling period from the beginning of the study until February 2018 was labelled the period before the decay of roots and rhizomes, while the period after this month was referred to as the period of decay of roots and rhizomes. Principal Coordinate Analysis (PCoA) was performed on Bray-Curtis dissimilarities based on protein NAAFs using the function `wcmdscale` from the vegan package. If necessary, the Lingoes correction method was applied to account for negative eigenvalues [@R-vegan; @Legendre2012; @Borcard2018].
+
+\newpage
+
+# Results
+
+```{r, results-alpha}
+
+# Split the number of proteins and the exponential of the Shannon diversity
+# index into separate datasets
+alpha_ob <- alpha %>%
+  filter(parameter == "observed_number")
+alpha_sh <- alpha %>%
+  filter(parameter == "shannon_exponential")
+
+# Extract the values of the observed number of proteins for reporting
+ob_ve_bd_to <- alpha_ob %>%
+  filter(station == "Vegetated", layer == "Top", decay_roots == "Before Decay")
+ob_ve_bd_um <- alpha_ob %>%
+  filter(station == "Vegetated", layer == "Upper Middle", decay_roots == "Before Decay")
+ob_ve_bd_lm <- alpha_ob %>%
+  filter(station == "Vegetated", layer == "Lower Middle", decay_roots == "Before Decay")
+ob_ve_bd_bo <- alpha_ob %>%
+  filter(station == "Vegetated", layer == "Bottom", decay_roots == "Before Decay")
+ob_nv_bd_to <- alpha_ob %>%
+  filter(station == "Nonvegetated", layer == "Top", decay_roots == "Before Decay")
+ob_nv_bd_um <- alpha_ob %>%
+  filter(station == "Nonvegetated", layer == "Upper Middle", decay_roots == "Before Decay")
+ob_nv_bd_lm <- alpha_ob %>%
+  filter(station == "Nonvegetated", layer == "Lower Middle", decay_roots == "Before Decay")
+ob_nv_bd_bo <- alpha_ob %>%
+  filter(station == "Nonvegetated", layer == "Bottom", decay_roots == "Before Decay")
+
+# Extract the values of the exponential of the Shannon diversity index
+# for reporting
+sh_ve_bd_lm <- alpha_sh %>%
+  filter(station == "Vegetated", layer == "Lower Middle", decay_roots == "Before Decay")
+sh_ve_bd_bo <- alpha_sh %>%
+  filter(station == "Vegetated", layer == "Bottom", decay_roots == "Before Decay")
+sh_nv_bd_lm <- alpha_sh %>%
+  filter(station == "Nonvegetated", layer == "Lower Middle", decay_roots == "Before Decay")
+sh_nv_bd_bo <- alpha_sh %>%
+  filter(station == "Nonvegetated", layer == "Bottom", decay_roots == "Before Decay")
+sh_ve_de_lm <- alpha_sh %>%
+  filter(station == "Vegetated", layer == "Lower Middle", decay_roots == "Decay of Roots\nand Rhizomes")
+sh_nv_de_bo <- alpha_sh %>%
+  filter(station == "Nonvegetated", layer == "Bottom", decay_roots == "Decay of Roots\nand Rhizomes")
+
+```
+To assess the richness and diversity of isolated proteins from the sediment microbial communities in the Bay of Saline, the number of observed proteins and the exponential of the Shannon diversity index were calculated. Samples from each layer were grouped based on the sampling site and the period before and during the decay of *C. nodosa* roots and rhizomes. Comparisons between sampling sites in each period and between different periods at each site were performed (Fig. \@ref(fig:alpha)). In all layers, significantly (*p* < 0.05) higher numbers of observed proteins were found during the period before the decay of roots and rhizomes at the vegetated (top, `r min(ob_ve_bd_to$value)` – `r max(ob_ve_bd_to$value)` proteins; upper middle, `r min(ob_ve_bd_um$value)` – `r max(ob_ve_bd_um$value)` proteins; lower middle, `r min(ob_ve_bd_lm$value)` – `r max(ob_ve_bd_lm$value)` proteins; and bottom, `r min(ob_ve_bd_bo$value)` – `r max(ob_ve_bd_bo$value)` proteins) compared to the nonvegetated (top, `r min(ob_nv_bd_to$value)` – `r max(ob_nv_bd_to$value)` proteins; upper middle, `r min(ob_nv_bd_um$value)` – `r max(ob_nv_bd_um$value)` proteins; lower middle, `r min(ob_nv_bd_lm$value)` – `r max(ob_nv_bd_lm$value)` proteins; and bottom, `r min(ob_nv_bd_bo$value)` – `r max(ob_nv_bd_bo$value)` proteins) site. In contrast, no significant changes between sites were observed in all layers during the period of roots and rhizomes decay. In addition, no significant changes were found at each site between the two periods. When analysing the exponential of the Shannon diversity index, significant changes were observed only in the lower middle and bottom layer (Fig. \@ref(fig:alpha)). Here, in agreement with the number of observed proteins, higher values were found during the period before the decay of roots and rhizomes at the vegetated (lower middle `r min(sh_ve_bd_lm$value)` – `r max(sh_ve_bd_lm$value)` proteins and bottom, `r min(sh_ve_bd_bo$value)` – `r max(sh_ve_bd_bo$value)` proteins) compared to the nonvegetated site (lower middle `r min(sh_nv_bd_lm$value)` – `r max(sh_nv_bd_lm$value)` proteins and bottom, `r min(sh_nv_bd_bo$value)` – `r max(sh_nv_bd_bo$value)` proteins). Also, in agreement with the number of observed proteins, no significant changes were observed between the sites during the period of roots and rhizomes decay. Additionally, the Shannon diversity index showed significant changes in these layers between the two periods. In the lower middle layer of the vegetated site, significantly higher values were observed before (`r min(sh_ve_bd_lm$value)` – `r max(sh_ve_bd_lm$value)` proteins) than during (`r min(sh_ve_de_lm$value)` – `r max(sh_ve_de_lm$value)` proteins) roots and rhizomes decay. However, in the bottom layer of the nonvegetated site significantly higher values were found during the period of roots and rhizomes decay (`r min(sh_nv_de_bo$value)` – `r max(sh_nv_de_bo$value)` proteins) than before the decay (`r min(sh_nv_bd_bo$value)` – `r max(sh_nv_bd_bo$value)` proteins).
+
+(ref:alpha) The observed number of proteins and the exponential of the Shannon diversity index of sediment microbial communities in the Bay of Saline. Samples were collected in different sediment layers at the vegetated and nonvegetated site before and during the decay of roots and rhizomes of *C. nodosa*. Asterisks indicate the level of statistical significance: **\****p* < 0.05 and **\*\****p* < 0.01.
+
+```{r, alpha, out.width = "100%", fig.align = "center", fig.cap = "(ref:alpha)", fig.pos = "H"}
+
+include_graphics(path = "../results/figures/alpha.jpg")
+
+```
+
+```{r, results-anosim}
+
+# Extract the ANOSIM R and p values calculated from all proteins
+# and from COG C categorised proteins for both sites and all layers
+anosim_allp <- all %>%
+  filter(station == "All Stations" & layer == "All Layers")
+anosim_C <- C %>%
+  filter(station == "All Stations" & layer == "All Layers")
+
+# Extract the ANOSIM R and p values calculated from all proteins
+# and from COG C categorised proteins for the vegetated site,
+# for all layers, and for all groups
+anosim_allp_ve <- all %>%
+  filter(station == "Vegetated" & layer == "All Layers")
+anosim_C_ve <- C %>%
+  filter(station == "Vegetated" & layer == "All Layers")
+
+# Extract the ANOSIM R and p values calculated from all proteins
+# and from COG C categorised proteins for the nonvegetated site,
+# for all layers, and for the layer group
+anosim_allp_nv_ly <- all %>%
+  filter(station == "Nonvegetated" & groups == "layer" & layer == "All Layers")
+anosim_C_nv_ly <- C %>%
+  filter(station == "Nonvegetated" & groups == "layer" & layer == "All Layers")
+
+# Combine the extracted ANOSIM R and p values
+anosim_ve <- rbind(anosim_allp_ve,
+                   anosim_C_ve,
+                   anosim_allp_nv_ly,
+                   anosim_C_nv_ly)
+
+# Extract the ANOSIM R and p values calculated from all proteins
+# and from COG C categorised proteins for the nonvegetated site,
+# for all layers, and for the group defining the decay of roots
+# and rhizomes
+anosim_allp_nv_de <- all %>%
+  filter(station == "Nonvegetated" & groups == "decay_roots" & layer == "All Layers")
+anosim_C_nv_de <- C %>%
+  filter(station == "Nonvegetated" & groups == "decay_roots" & layer == "All Layers")
+
+# Extract the ANOSIM R and p values calculated from all proteins
+# and from COG C categorised proteins for the vegetated site,
+# across all layers, and for the group defining the decay of roots
+# and rhizomes
+anosim_allp_ve_ly_de <- all %>%
+  filter(station == "Vegetated" &
+         layer %in% c("Top", "Upper Middle", "Lower Middle", "Bottom") &
+         groups == "decay_roots")
+anosim_C_ve_ly_de <- C %>%
+  filter(station == "Vegetated" &
+         layer %in% c("Top", "Upper Middle", "Lower Middle", "Bottom") &
+         groups == "decay_roots")
+
+# Extract the ANOSIM R and p values calculated from all proteins
+# and from COG C categorised proteins for the nonvegetated site,
+# for the top layer, and for the group defining the decay of roots
+# and rhizomes
+anosim_allp_nv_to_de <- all %>%
+  filter(station == "Nonvegetated" &
+         layer %in% c("Top") &
+         groups == "decay_roots")
+anosim_C_nv_to_de <- C %>%
+  filter(station == "Nonvegetated" &
+         layer %in% c("Top") &
+         groups == "decay_roots")
+
+# Extract the ANOSIM R and p values calculated from all proteins
+# and from COG C categorised proteins for the nonvegetated site,
+# for the upper middle and lower middle layer, and for the group
+# defining the decay of roots and rhizomes
+anosim_allp_nv_umlm_de <- all %>%
+  filter(station == "Nonvegetated" &
+         layer %in% c("Upper Middle", "Lower Middle") &
+         groups == "decay_roots")
+anosim_C_nv_umlm_de <- C %>%
+  filter(station == "Nonvegetated" &
+         layer %in% c("Upper Middle", "Lower Middle") &
+         groups == "decay_roots")
+
+# Extract the ANOSIM R and p values calculated from all proteins
+# and from COG C categorised proteins for the nonvegetated site,
+# for the bottom layer, and for the group defining the decay of roots
+# and rhizomes
+anosim_allp_nv_bo_de <- all %>%
+  filter(station == "Nonvegetated" &
+         layer %in% c("Bottom") &
+         groups == "decay_roots")
+anosim_C_nv_bo_de <- C %>%
+  filter(station == "Nonvegetated" &
+         layer %in% c("Bottom") &
+         groups == "decay_roots")
+
+```
+ANOSIM testing of Bray-Curtis dissimilarities was applied to determine the changes in the structure of the metabolic profile of the sediment microbial communities. When all proteins from all samples were analysed together, no strong differentiation was observed between sites, layers, or the period before and during the decay of roots and rhizomes (ANOSIM, R = `r custom_round(x = anosim_allp$R)$min` – `r custom_round(x = anosim_allp$R)$max`, all *p* `r  format_p_values(x = max(anosim_allp$p))`). To determine whether only a part of the metabolic network showed any differentiation, proteins classified in the Cluster of Orthologous Genes (COG) category C (energy production and conversion), the most abundant category in our samples (see below, Supplementary Table \@ref(supp-tab:cog)), were analysed separately. However, no strong differentiation was observed between sites, layers, or decay periods when only these proteins were considered (ANOSIM, R = `r custom_round(x = anosim_C$R)$min` – `r custom_round(x = anosim_C$R)$max`, all *p* `r format_p_values(x = max(anosim_C$p))`). In addition, the separate analysis of samples from the vegetated and nonvegetated site of all and COG C categorised proteins did also not reveal a strong differentiation between layers or decay periods (ANOSIM, R = `r custom_round(x = anosim_ve$R)$min` – `r custom_round(x = anosim_ve$R)$max`, all *p* `r format_p_values(x = max(anosim_ve$p))`), with the exception of a more pronounced separation observed at the nonvegetated site between the periods before and during the decay of roots and rhizomes. This separation could be observed when all proteins (ANOSIM, R = `r format(x = anosim_allp_nv_de$R, digits = 2)`, *p* `r format_p_values(x = anosim_allp_nv_de$p)`) and, especially, when proteins from the functional COG category C (ANOSIM, R = `r format(x = anosim_C_nv_de$R, digits = 2)`, *p* `r format_p_values(x = anosim_C_nv_de$p)`) were considered. To gain a clearer overview of this separation, samples from the nonvegetated site were analysed using PCoA (Fig. \@ref(fig:pcoa-nonvegetated)). A distinction of samples from the lower middle and bottom layer retrieved during the period before the decay of roots and rhizomes from all other samples was noticed. This distinction could be observed when all proteins were analysed together, but especially when proteins from the functional COG category C were considered (Fig. \@ref(fig:pcoa-nonvegetated)). Furthermore, to gain a better insight in the change of the structure of the metabolic profile between the period before and during the decay of roots and rhizomes, samples from each site and layer were analysed separately. Sediment layers of the vegetated site did not show any strong differentiation between these two periods when either all (ANOSIM, R = `r custom_round(x = anosim_allp_ve_ly_de$R)$min` – `r custom_round(x = anosim_allp_ve_ly_de$R)$max`, *p* = `r custom_round(x = anosim_allp_ve_ly_de$p)$min` – `r custom_round(x = anosim_allp_ve_ly_de$p)$max`) or only COG C categorised proteins (ANOSIM, R = `r custom_round(x = anosim_C_ve_ly_de$R)$min` – `r custom_round(x = anosim_C_ve_ly_de$R)$max`, *p* = `r custom_round(x = anosim_C_ve_ly_de$p)$min` – `r custom_round(x = anosim_C_ve_ly_de$p)$max`) were considered. In contrast, a pronounced separation between the two periods was observed in different layers of the nonvegetated site (Fig. \@ref(fig:pcoa-layer)). When comparing the layers of this site, the lowest distinction between the two periods was observed in the top layer (ANOSIM; all proteins, R =  `r format(x = anosim_allp_nv_to_de$R, digits = 2)`, *p* `r format_p_values(x = anosim_allp_nv_to_de$p)`; COG C proteins, R = `r format(x = anosim_C_nv_to_de$R, digits = 2)`, *p* `r format_p_values(x = anosim_C_nv_to_de$p)`), middle in the upper and lower middle layer (ANOSIM; all proteins, R = `r custom_round(anosim_allp_nv_umlm_de$R)$min` – `r custom_round(anosim_allp_nv_umlm_de$R)$max`, all *p* `r format_p_values(x = max(anosim_allp_nv_umlm_de$p))`; COG C proteins, R = `r custom_round(anosim_C_nv_umlm_de$R)$min` – `r custom_round(anosim_C_nv_umlm_de$R)$max`, all *p* `r format_p_values(x = max(anosim_C_nv_umlm_de$p))`), and the highest in the bottom layer (ANOSIM; all proteins, R = `r format(x = anosim_allp_nv_bo_de$R, digits = 2)`, *p* `r format_p_values(x = anosim_allp_nv_bo_de$p)`; COG C proteins, R = `r format(x = anosim_C_nv_bo_de$R, digits = 2)`, *p* `r format_p_values(x = anosim_C_nv_bo_de$p)`).
+
+(ref:pcoa-nonvegetated) PCoA of Bray-Curtis dissimilarities of microbial proteins sampled in the sediment of the Bay of Saline. All proteins and proteins classified only into COG category C (energy production and conversion) were analysed. Only samples collected in sediment layers at the nonvegetated site before and during decay of roots and rhizomes of *C. nodosa* are shown. The proportion of variation explained by each axis is indicated in parentheses on the corresponding axis.
+
+```{r, pcoa-nonvegetated, out.width = "100%", fig.align = "center", fig.cap = "(ref:pcoa-nonvegetated)", fig.pos = "H"}
+
+include_graphics(path = "../results/figures/pcoa_nonvegetated.jpg")
+
+```
+
+```{r, results-cog}
+
+################################################################################
+# Number of COG assigned proteins
+################################################################################
+
+# Filter proteins that contain a COG category (remove entries that
+# are NA or "-")
+cog_proteins <- formatted_metaproteomic_data %>%
+  filter(!is.na(COG_category)) %>%
+  filter(COG_category != "-") %>%
+  # Calculate the number of COG assigned proteins
+  nrow()
+
+################################################################################
+# Functional COG category C
+################################################################################
+
+# Transpose the data containing summarised NAAFs for
+# each COG category
+transposed_cog_naaf <- cog_naaf %>%
+  transpose_naaf(id_column = "COG_category")
+
+# Load metadata and format labels using custom function
+metadata <- read_tsv(file = "data/raw/metadata.tsv") %>%
+  format_labels()
+
+# Join metadata and transposed COG data
+metadata_transposed_cog_naaf <- inner_join(metadata, transposed_cog_naaf, by = c("ID" = "ID"))
+
+# Express the proportion of the functional COG category C
+# as a percentage
+metadata_transposed_cog_naaf <- inner_join(metadata, transposed_cog_naaf, by = c("ID" = "ID")) %>%
+  mutate(C = C * 100)
+
+# Test the differences between stations and decay periods
+cog_test <- selected_pairwise_wilcox(input = metadata_transposed_cog_naaf, select_value_column = "C")
+
+# Extract the values for reporting
+cog_ve_bd_bo <- metadata_transposed_cog_naaf %>%
+  filter(station == "Vegetated", layer == "Bottom", decay_roots == "Before Decay")
+cog_nv_bd_bo <- metadata_transposed_cog_naaf %>%
+  filter(station == "Nonvegetated", layer == "Bottom", decay_roots == "Before Decay")
+cog_nv_de_bo <- metadata_transposed_cog_naaf %>%
+  filter(station == "Nonvegetated", layer == "Bottom", decay_roots == "Decay of Roots\nand Rhizomes")
+
+```
+A total of `r cog_proteins` different proteins were assigned to a COG functional category. The most abundant COG category in terms of the number of proteins it contained (`r filter(.data = cog_number, COG_category == "C")$MM_total` proteins) and their NAAFs (`r filter(.data = cog_naaf, COG_category == "C")$MM_sum * 100` \si{\percent}) was the functional COG category C, which comprises proteins for energy production and conversion (Supplementary Table \@ref(supp-tab:cog)). To detect how the decay of the meadow affected the energy production and conversion of sediment microbial communities in the Bay of Saline, we assessed the NAAF dynamics of the functional COG category C in each sediment layer. When comparing the sites before the decay of roots and rhizomes, significant (*p* < 0.05) differences were only observed in the bottom layer where the proteins of this functional category comprised a larger proportion at the nonvegetated (`r min(cog_nv_bd_bo$C)` – `r max(cog_nv_bd_bo$C)` \si{\percent}) than at the vegetated (`r min(cog_ve_bd_bo$C)` – `r max(cog_ve_bd_bo$C)` \si{\percent}) site. No significant difference was found between the sites during the decay period. When comparing the layers of the individual sites before and during the decay of roots and rhizomes, we detected a significant change in the proportion of the functional COG category C only in the bottom layer of the nonvegetated site. Here, a significant decrease in the proportion of this functional category was observed between the period before (`r min(cog_nv_bd_bo$C)` – `r max(cog_nv_bd_bo$C)` \si{\percent}) and during (`r min(cog_nv_de_bo$C)` – `r max(cog_nv_de_bo$C)` \si{\percent}) the decay of roots and rhizomes.
+
+(ref:pcoa-layer) PCoA of Bray-Curtis dissimilarities of microbial proteins sampled in each layer in the sediment of the Bay of Saline. All proteins and proteins classified only into COG category C (energy production and conversion) were analysed. Only samples collected at the nonvegetated site before and during decay of roots and rhizomes of *C. nodosa* are shown. The proportion of variation explained by each axis is indicated in parentheses on the corresponding axis.
+
+```{r, pcoa-layer, out.width = "95%", fig.align = "center", fig.cap = "(ref:pcoa-layer)", fig.pos = "H"}
+
+include_graphics(path = "../results/figures/pcoa_layer.jpg")
+
+```
+
+```{r, results-cog-c-kegg}
+
+################################################################################
+# Number of KEGG KO entries and their assigned proteins
+################################################################################
+
+# Filter proteins that contain a KEGG KO entry (remove entries that
+# are NA or "-")
+ko_number <- formatted_metaproteomic_data %>%
+  filter(!is.na(KEGG_ko)) %>%
+  filter(KEGG_ko != "-") %>%
+  # Separate proteins assigned to multiple KO entries
+  separate_longer_delim(cols = KEGG_ko, delim = ",") %>%
+  # Remove "ko:" from KO entries
+  mutate(KEGG_ko = str_remove(KEGG_ko, "^ko:")) %>%
+  # Calculate the number of KO entries
+  summarise(KEGG_ko_number = n_distinct(KEGG_ko))
+
+# Filter proteins that contain a KEGG KO entry (remove entries that
+# are NA or "-")
+ko_proteins <- formatted_metaproteomic_data %>%
+  filter(!is.na(KEGG_ko)) %>%
+  filter(KEGG_ko != "-") %>%
+  # Calculate the number of KO assigned proteins
+  nrow()
+
+################################################################################
+# KEGG KO entries within the functional COG category C
+################################################################################
+
+# Extract the values for reporting proteins with the highest proportion
+# within the functional COG category C
+atpE <- naaf_ko_names %>%
+  filter(KO_name == "atpE (ATPF0C)")
+hppA <- naaf_ko_names %>%
+  filter(KO_name == "hppA")
+aprA <- naaf_ko_names %>%
+  filter(KO_name == "aprA")
+aprB <- naaf_ko_names %>%
+  filter(KO_name == "aprB")
+
+# Filter the most abundant KEGG KO entries to be plotted
+naaf_ko_names <- naaf_ko_names %>%
+  filter(KO_name %in% c("atpE (ATPF0C)",
+                        "hppA",
+                        "aprA",
+                        "aprB"))
+
+# Select columns containing KEGG KO names and NAAFs sample data
+naaf_ko_names <- naaf_ko_names %>%
+  select(KO_name, starts_with(match = "MM_"), -MM_sum)
+
+# Transpose data
+naaf_ko_names <- naaf_ko_names %>%
+  transpose_naaf(id_column = KO_name)
+
+# Load metadata
+metadata <- read_tsv(file = "data/raw/metadata.tsv")
+
+# Join metadata and NAAFs data and format labels
+metadata_naaf_ko_names <- right_join(x = metadata, y = naaf_ko_names, by = c("ID" = "ID")) %>%
+  format_labels()
+
+# Filter samples from the nonvegetated site
+metadata_naaf_ko_names <- metadata_naaf_ko_names %>%
+  filter(station == "Nonvegetated")
+
+# Sum aprA and aprB
+metadata_naaf_ko_names <- metadata_naaf_ko_names %>%
+  mutate(aprAB = aprA + aprB) %>%
+  select(-aprA, -aprB)
+
+# Pivot longer the data
+metadata_naaf_ko_names <- metadata_naaf_ko_names %>%
+  pivot_longer(cols = c(aprAB, `atpE (ATPF0C)`, hppA), names_to = "KO_name", values_to = "KO_in_C_value")
+
+# Extract the values for reporting the dynamics of proteins with
+# the highest proportion within the functional COG category C
+atpE_bd_bo <- metadata_naaf_ko_names %>%
+  filter(KO_name == "atpE (ATPF0C)", layer == "Bottom", decay_roots == "Before Decay")
+atpE_de_bo <- metadata_naaf_ko_names %>%
+  filter(KO_name == "atpE (ATPF0C)", layer == "Bottom", decay_roots == "Decay of Roots\nand Rhizomes")
+hppA_bd_bo <- metadata_naaf_ko_names %>%
+  filter(KO_name == "hppA", layer == "Bottom", decay_roots == "Before Decay")
+hppA_de_bo <- metadata_naaf_ko_names %>%
+  filter(KO_name == "hppA", layer == "Bottom", decay_roots == "Decay of Roots\nand Rhizomes")
+aprAB_bd_bo <- metadata_naaf_ko_names %>%
+  filter(KO_name == "aprAB", layer == "Bottom", decay_roots == "Before Decay")
+aprAB_de_bo <- metadata_naaf_ko_names %>%
+  filter(KO_name == "aprAB", layer == "Bottom", decay_roots == "Decay of Roots\nand Rhizomes")
+
+# Test the difference between decay periods
+ko_test_hppA_bo <- custom_wilcox(input = metadata_naaf_ko_names, filter_layer = "Bottom",
+                                 filter_analysis = "hppA", select_value_column = "KO_in_C_value",
+                                 group_by = c("Before Decay", "Decay of Roots\nand Rhizomes"))
+
+```
+As the COG categories provide only a broad overview, the predicted CDSs were also classified using the Kyoto Encyclopaedia of Genes and Genomes (KEGG) Orthology (KO) database to gain better insight into the metabolic profile. A total of `r ko_number` different KO entries were present in the dataset, while `r ko_proteins` proteins were assigned to one or more of these KO entries. As the functional COG category C was the most abundant in our dataset (Supplementary Table \@ref(supp-tab:cog)), we aimed to further explore the dynamics of the most pronounced KO entries within this category. The F-type H^+^-transporting ATPase subunit c (ATPF0C, atpE; `r atpE$MM_sum` \si{\percent}), the K^+^-stimulated pyrophosphate-energized sodium pump (hppA; `r hppA$MM_sum` \si{\percent}), and the adenylylsulphate reductase subunits A (aprA; `r aprA$MM_sum` \si{\percent}) and B (aprB; `r aprB$MM_sum` \si{\percent}) represented the highest proportion (NAAF) within the functional COG category C (Fig. \@ref(fig:cog-c-kegg)). As the samples from the nonvegetated site showed a clear separation based on the period of roots and rhizomes decay, especially when the COG category C dataset was considered (Fig. \@ref(fig:pcoa-nonvegetated)), we compared the proportion of these three proteins at the nonvegetated site before and during the decay of roots and rhizomes (Fig. \@ref(fig:cog-c-kegg)). We observed a significant (*p* < 0.05) decrease in the proportion of the F-type H^+^-transporting ATPase subunit c during the decay of roots and rhizomes in all layers. This decrease was particularly pronounced in the bottom layer, where this protein constituted between `r min(atpE_bd_bo$KO_in_C_value)` and `r max(atpE_bd_bo$KO_in_C_value)` \si{\percent} of all COG C categorised proteins before the decay. During the decay of roots and rhizomes, its proportion dropped to between `r min(atpE_de_bo$KO_in_C_value)` and `r max(atpE_de_bo$KO_in_C_value)` \si{\percent}. Although not as pronounced as the change in the F-type H^+^-transporting ATPase subunit c, the K^+^-stimulated pyrophosphate-energized sodium pump also showed a significant shift between the two periods in all layers, except the top layer. The most significant shift was observed in the bottom layer, where this protein increased from between `r min(hppA_bd_bo$KO_in_C_value)` and `r max(hppA_bd_bo$KO_in_C_value)` \si{\percent} of all COG categorised proteins before the decay to between `r min(hppA_de_bo$KO_in_C_value)` and `r max(hppA_de_bo$KO_in_C_value)` \si{\percent} during the decay (*p* `r format_p_values(x = ko_test_hppA_bo$wilcox$p.value)`). The proportion of the adenylylsulphate reductase subunits A and B also increased during the decay in all layers, with the exception of the top layer. However, this shift was only significant in the bottom layer, where this protein increased from `r min(aprAB_bd_bo$KO_in_C_value)` to `r max(aprAB_bd_bo$KO_in_C_value)` \si{\percent} of all COG categorised proteins before the decay to `r min(aprAB_de_bo$KO_in_C_value)` to `r max(aprAB_de_bo$KO_in_C_value)` \si{\percent} during the decay.
+
+(ref:cog-c-kegg) Proportion of the most abundant (\> 3 \si{\percent}) KEGG KO entries within the functional COG category C (energy production and conversion) in all samples and changes in the proportion of the same entries in each layer at the nonvegetated site before and during the decay of roots and rhizomes of *C. nodosa* in the Bay of Saline. The proportion was calculated using the NAAF. Asterisks indicate the level of statistical significance: **\****p* < 0.05, **\*\****p* < 0.01, and **\*\*\****p* < 0.001.
+
+```{r, cog-c-kegg, out.width = "100%", fig.align = "center", fig.cap = "(ref:cog-c-kegg)", fig.pos = "H"}
+
+include_graphics(path = "../results/figures/cog_c_kegg.jpg")
+
+```
+
+```{r, results-hydrolases}
+
+################################################################################
+# CAZymes
+################################################################################
+
+# Calculate the data for reporting
+cazy <- custom_heatmap(input = naaf, database = CAZy, filter_database_entry = NULL, metadata = metadata,
+                       filter_ko_names = NULL, filter_ko_table = NULL, summarise_by = NULL)
+
+# Test the differences between stations and decay periods
+cazy_test <- selected_pairwise_wilcox(input = cazy$in_total_summed, select_value_column = "NAAF (%)")
+
+# Extract the values for reporting (all CAZymes)
+cazy_nv_bd_to <- cazy$in_total_summed %>%
+  filter(station == "Nonvegetated", layer == "Top", decay_roots == "Before Decay")
+cazy_nv_de_to <- cazy$in_total_summed %>%
+  filter(station == "Nonvegetated", layer == "Top", decay_roots == "Decay of Roots\nand Rhizomes")
+
+# Extract the values for reporting (GH5 and GH9)
+GH5_GH9 <- cazy$formatted_data %>%
+  # Sum the NAAFs from all samples
+  mutate(MM_sum = rowSums(select(., starts_with(match = "MM"))), .after = CAZy) %>%
+  # Recalculate the relative contribution of the database entries
+  mutate(MM_sum =  MM_sum / sum(MM_sum)) %>%
+  # Filter the defined entries
+  filter(str_detect(string = CAZy, pattern = c("GH5|GH9")))
+  
+################################################################################
+# Peptidases
+################################################################################
+
+# Calculate the data for reporting (all peptidases)
+peptidases <- custom_heatmap(input = naaf, database = KEGG_ko, filter_database_entry = NULL, metadata = metadata,
+                             filter_ko_names = "EC:3.4", filter_ko_table = NULL, summarise_by = NULL)
+
+# Test the differences between stations and decay periods
+peptidases_test <- selected_pairwise_wilcox(input = peptidases$in_total_summed, select_value_column = "NAAF (%)")
+
+# Extract the values for reporting (all peptidases)
+peptidases_ve_bd_um <- peptidases$in_total_summed %>%
+  filter(station == "Vegetated", layer == "Upper Middle", decay_roots == "Before Decay")
+peptidases_ve_de_um <- peptidases$in_total_summed %>%
+  filter(station == "Vegetated", layer == "Upper Middle", decay_roots == "Decay of Roots\nand Rhizomes")
+
+# Extract the values for reporting
+# (metalloendopeptidases and serine endopeptidases)
+metallo_serine <- peptidases$formatted_data %>%
+  # Sum the NAAFs from all samples
+  mutate(MM_sum = rowSums(select(., starts_with(match = "MM"))), .after = KEGG_ko) %>%
+  # Recalculate the relative contribution of the database entries
+  mutate(MM_sum =  MM_sum / sum(MM_sum)) %>%
+  # Filter the defined entries
+  filter(str_detect(KEGG_ko, paste0(filter(.data = ko_names,
+                                           str_detect(string = KO_name, pattern = c("EC:3.4.24|EC:3.4.21")))$KEGG_ko,
+                                    collapse = "|")))
+
+```
+The degradation of complex organic matter by the sediment microbial community in the Bay of Saline was evaluated by assessing the dynamics of the carbohydrate, protein, and lipid hydrolytic enzymes (Fig. \@ref(fig:heatmap-hydrolases-abc-transporters)). The dynamics of carbohydrate hydrolytic enzymes was determined using Carbohydrate-Active enZymes (CAZymes), whose proportion did not significantly (*p* < 0.05) change between stations or decay periods, with the exception of the top sediment layer at the nonvegetated site. Here, a significant decrease in the proportion of CAZymes was observed from the period before decay (`r custom_round(x = cazy_nv_bd_to$'NAAF (%)')$min` – `r custom_round(x = cazy_nv_bd_to$'NAAF (%)')$max` \si{\percent}) to the period of roots and rhizomes decay (`r custom_round(x = cazy_nv_de_to$'NAAF (%)')$min` – `r custom_round(x = cazy_nv_de_to$'NAAF (%)')$max` \si{\percent}; Fig. \@ref(fig:heatmap-hydrolases-abc-transporters)). Proteins assigned to the glycoside hydrolase families GH5 and GH9 were the most abundant of all CAZymes (`r GH5_GH9$MM_sum %>% sum() * 100` \si{\percent}). To assess protein degradation, we focused on proteins assigned as peptidases in KEGG. The proportion of these enzymes significantly increased in the upper middle layer of the vegetated site from the period before decay (`r custom_round(x = peptidases_ve_bd_um$'NAAF (%)')$min` – `r custom_round(x = peptidases_ve_bd_um$'NAAF (%)')$max` \si{\percent}) to the period of roots and rhizomes decay (`r custom_round(x = peptidases_ve_de_um$'NAAF (%)')$min` – `r custom_round(x = peptidases_ve_de_um$'NAAF (%)')$max` \si{\percent}; Fig. \@ref(fig:heatmap-hydrolases-abc-transporters)). Peptidases were almost exclusively comprised of metalloendopeptidases and serine endopeptidases (`r metallo_serine$MM_sum %>% sum() * 100` \si{\percent}). Compared to CAZymes and peptidases, lipases were the least represented in our data (Fig. \@ref(fig:heatmap-hydrolases-abc-transporters)).
+
+```{r, results-abc-transporters}
+
+# Calculate the data for reporting
+abc <- custom_heatmap(input = naaf, database = KEGG_Pathway, filter_database_entry = "map02010", metadata = metadata,
+                      filter_ko_names = NULL, filter_ko_table = NULL, summarise_by = NULL)
+
+# Extract the values for reporting
+# (proportion of sugar ABC transporters among all ABC transporters)
+abc_sugar <- abc$formatted_data %>%
+  # Sum the NAAFs from all samples
+  mutate(MM_sum = rowSums(select(., starts_with(match = "MM"))), .after = KEGG_ko) %>%
+  # Recalculate the relative contribution of the database entries
+  mutate(MM_sum =  MM_sum / sum(MM_sum)) %>%
+  # Filter the defined entries
+  filter(KEGG_Pathway == "sugar")
+
+# Extract the values for reporting
+# (proportion of amino acid ABC transporters among all ABC transporters)
+abc_amino_acid <- abc$formatted_data %>%
+  # Sum the NAAFs from all samples
+  mutate(MM_sum = rowSums(select(., starts_with(match = "MM"))), .after = KEGG_ko) %>%
+  # Recalculate the relative contribution of the database entries
+  mutate(MM_sum =  MM_sum / sum(MM_sum)) %>%
+  # Filter the defined entries
+  filter(KEGG_Pathway == "amino acid")
+
+# Test the differences between stations and decay periods
+abc_sugar_test <- abc$in_total %>%
+  filter(KEGG_Pathway == "sugar") %>%
+  selected_pairwise_wilcox(select_value_column = "NAAF (%)")
+abc_amino_acid_test <- abc$in_total %>%
+  filter(KEGG_Pathway == "amino acid") %>%
+  selected_pairwise_wilcox(select_value_column = "NAAF (%)")
+
+# Extract the values for reporting
+# (sugar ABC transporters)
+abc_sugar_ve_bd_lm <- abc$in_total %>%
+  filter(KEGG_Pathway == "sugar") %>%
+  filter(station == "Vegetated", layer == "Lower Middle", decay_roots == "Before Decay")
+abc_sugar_ve_bd_bo <- abc$in_total %>%
+  filter(KEGG_Pathway == "sugar") %>%
+  filter(station == "Vegetated", layer == "Bottom", decay_roots == "Before Decay")
+abc_sugar_nv_bd_lm <- abc$in_total %>%
+  filter(KEGG_Pathway == "sugar") %>%
+  filter(station == "Nonvegetated", layer == "Lower Middle", decay_roots == "Before Decay")
+abc_sugar_nv_bd_bo <- abc$in_total %>%
+  filter(KEGG_Pathway == "sugar") %>%
+  filter(station == "Nonvegetated", layer == "Bottom", decay_roots == "Before Decay")
+abc_sugar_nv_de_bo <- abc$in_total %>%
+  filter(KEGG_Pathway == "sugar") %>%
+  filter(station == "Nonvegetated", layer == "Bottom", decay_roots == "Decay of Roots\nand Rhizomes")
+
+# Extract the values for reporting
+# (amino acid ABC transporters)
+abc_amino_acid_nv_bd_bo <- abc$in_total %>%
+  filter(KEGG_Pathway == "amino acid") %>%
+  filter(station == "Nonvegetated", layer == "Bottom", decay_roots == "Before Decay")
+abc_amino_acid_nv_de_bo <- abc$in_total %>%
+  filter(KEGG_Pathway == "amino acid") %>%
+  filter(station == "Nonvegetated", layer == "Bottom", decay_roots == "Decay of Roots\nand Rhizomes")
+
+```
+We assessed the dynamics of ATP-binding cassette (ABC) transporters to evaluate the uptake of hydrolytic products by prokaryotic cells. Substrate-binding proteins classified as ABC transporters in the KEGG Pathway (map02010) were selected and further manually classified into the following categories based on the molecules they transport: sugar, peptide, amino acid, urea, lipid, polyol, phosphate, and mineral and organic ion (Fig. \@ref(fig:heatmap-hydrolases-abc-transporters)). Sugar (`r abc_sugar$MM_sum %>% sum() * 100` \si{\percent}) and amino acid (`r abc_amino_acid$MM_sum %>% sum() * 100` \si{\percent}) transporters were the most abundant among all selected ABC transporters. In the lower middle and bottom layer, a significantly (*p* < 0.05) higher proportion of sugar ABC transporters was observed at the vegetated (lower middle, `r custom_round(x = abc_sugar_ve_bd_lm$'NAAF (%)')$min` – `r custom_round(x = abc_sugar_ve_bd_lm$'NAAF (%)')$max` \si{\percent}; bottom, `r custom_round(x = abc_sugar_ve_bd_bo$'NAAF (%)')$min` – `r custom_round(x = abc_sugar_ve_bd_bo$'NAAF (%)')$max` \si{\percent}) than at the nonvegetated (lower middle, `r custom_round(x = abc_sugar_nv_bd_lm$'NAAF (%)')$min` – `r custom_round(x = abc_sugar_nv_bd_lm$'NAAF (%)')$max` \si{\percent}; bottom, `r custom_round(x = abc_sugar_nv_bd_bo$'NAAF (%)')$min` – `r custom_round(x = abc_sugar_nv_bd_bo$'NAAF (%)')$max` \si{\percent}) site during the period before roots and rhizomes decay (Fig. \@ref(fig:heatmap-hydrolases-abc-transporters)). In contrast, no significant differences in the proportion of ABC transporters targeting sugars between sites  were observed during the period of roots and rhizomes decay. These transporters also showed a significant increase in the bottom layer of the nonvegetated site from the period before decay (`r custom_round(x = abc_sugar_nv_bd_bo$'NAAF (%)')$min` – `r custom_round(x = abc_sugar_nv_bd_bo$'NAAF (%)')$max` \si{\percent}) to the period of roots and rhizomes decay (`r custom_round(x = abc_sugar_nv_de_bo$'NAAF (%)')$min` – `r custom_round(x = abc_sugar_nv_de_bo$'NAAF (%)')$max` \si{\percent}). The proportion of ABC transporters targeting amino acids only showed a significant increase in the bottom layer of the nonvegetated site from the period before decay (`r custom_round(x = abc_amino_acid_nv_bd_bo$'NAAF (%)')$min` – `r custom_round(x = abc_amino_acid_nv_bd_bo$'NAAF (%)')$max` \si{\percent}) to the period of roots and rhizomes decay (`r custom_round(x = abc_amino_acid_nv_de_bo$'NAAF (%)')$min` – `r custom_round(x = abc_amino_acid_nv_de_bo$'NAAF (%)')$max` \si{\percent}).
+
+(ref:heatmap-hydrolases-abc-transporters) Median proportion of groups of hydrolases and ABC transporters in sediment layers at the vegetated and nonvegetated site before and during the decay of roots and rhizomes of *C. nodosa* in the Bay of Saline. The proportion was calculated using the NAAF.
+
+```{r, heatmap-hydrolases-abc-transporters, out.width = "90%", fig.align = "center", fig.cap = "(ref:heatmap-hydrolases-abc-transporters)", fig.pos = "H"}
+
+include_graphics(path = "../results/figures/heatmap_hydrolases_abc_transporters.jpg")
+
+```
+
+```{r, results-fermentation}
+
+# Calculate the data for reporting
+fermentation <- custom_heatmap(input = naaf, database = KEGG_ko, filter_database_entry = NULL, metadata = metadata,
+                               filter_ko_names = NULL, filter_ko_table = fermentation, summarise_by = name)
+
+# Extract the values for reporting
+# (proportion of formate dehydrogenase)
+formate_dehydrogenase <- fermentation$formatted_data %>%
+  # Sum the NAAFs from all samples
+  mutate(MM_sum = rowSums(select(., starts_with(match = "MM"))), .after = KEGG_ko) %>%
+  # Recalculate the relative contribution of the database entries
+  mutate(MM_sum =  MM_sum / sum(MM_sum)) %>%
+  # Filter the defined entries
+  filter(KEGG_ko == "formate dehydrogenase")
+
+# Extract the values for reporting
+# (proportion of pyruvate:ferredoxin oxidoreductase)
+pyruvate_ferredoxin_oxidoreductase <- fermentation$formatted_data %>%
+  # Sum the NAAFs from all samples
+  mutate(MM_sum = rowSums(select(., starts_with(match = "MM"))), .after = KEGG_ko) %>%
+  # Recalculate the relative contribution of the database entries
+  mutate(MM_sum =  MM_sum / sum(MM_sum)) %>%
+  # Filter the defined entries
+  filter(KEGG_ko == "pyruvate:ferredoxin oxidoreductase")
+
+# Extract the values for reporting
+# (proportion of alcohol dehydrogenase)
+alcohol_dehydrogenase <- fermentation$formatted_data %>%
+  # Sum the NAAFs from all samples
+  mutate(MM_sum = rowSums(select(., starts_with(match = "MM"))), .after = KEGG_ko) %>%
+  # Recalculate the relative contribution of the database entries
+  mutate(MM_sum =  MM_sum / sum(MM_sum)) %>%
+  # Filter the defined entries
+  filter(KEGG_ko == "alcohol dehydrogenase")
+
+# Test the differences between stations and decay periods
+formate_dehydrogenase_test <- fermentation$in_total %>%
+  filter(KEGG_ko == "formate dehydrogenase") %>%
+  selected_pairwise_wilcox(select_value_column = "NAAF (%)")
+pyruvate_ferredoxin_oxidoreductase_test <- fermentation$in_total %>%
+  filter(KEGG_ko == "pyruvate:ferredoxin oxidoreductase") %>%
+  selected_pairwise_wilcox(select_value_column = "NAAF (%)")
+alcohol_dehydrogenase_test <- fermentation$in_total %>%
+  filter(KEGG_ko == "alcohol dehydrogenase") %>%
+  selected_pairwise_wilcox(select_value_column = "NAAF (%)")
+
+# Extract the values for reporting
+# (formate dehydrogenase)
+formate_dehydrogenase_ve_bd_lm <- fermentation$in_total %>%
+  filter(KEGG_ko == "formate dehydrogenase") %>%
+  filter(station == "Vegetated", layer == "Lower Middle", decay_roots == "Before Decay")
+formate_dehydrogenase_nv_bd_lm <- fermentation$in_total %>%
+  filter(KEGG_ko == "formate dehydrogenase") %>%
+  filter(station == "Nonvegetated", layer == "Lower Middle", decay_roots == "Before Decay")
+
+# Extract the values for reporting
+# (pyruvate:ferredoxin oxidoreductase)
+pyruvate_ferredoxin_oxidoreductase_ve_bd_bo <- fermentation$in_total %>%
+  filter(KEGG_ko == "pyruvate:ferredoxin oxidoreductase") %>%
+  filter(station == "Vegetated", layer == "Bottom", decay_roots == "Before Decay")
+pyruvate_ferredoxin_oxidoreductase_nv_bd_bo <- fermentation$in_total %>%
+  filter(KEGG_ko == "pyruvate:ferredoxin oxidoreductase") %>%
+  filter(station == "Nonvegetated", layer == "Bottom", decay_roots == "Before Decay")
+
+# Extract the values for reporting
+# (alcohol dehydrogenase)
+alcohol_dehydrogenase_ve_bd_lm <- fermentation$in_total %>%
+  filter(KEGG_ko == "alcohol dehydrogenase") %>%
+  filter(station == "Vegetated", layer == "Lower Middle", decay_roots == "Before Decay")
+alcohol_dehydrogenase_nv_bd_lm <- fermentation$in_total %>%
+  filter(KEGG_ko == "alcohol dehydrogenase") %>%
+  filter(station == "Nonvegetated", layer == "Lower Middle", decay_roots == "Before Decay")
+alcohol_dehydrogenase_ve_de_lm <- fermentation$in_total %>%
+  filter(KEGG_ko == "alcohol dehydrogenase") %>%
+  filter(station == "Vegetated", layer == "Lower Middle", decay_roots == "Decay of Roots\nand Rhizomes")
+alcohol_dehydrogenase_nv_de_lm <- fermentation$in_total %>%
+  filter(KEGG_ko == "alcohol dehydrogenase") %>%
+  filter(station == "Nonvegetated", layer == "Lower Middle", decay_roots == "Decay of Roots\nand Rhizomes")
+alcohol_dehydrogenase_ve_bd_bo <- fermentation$in_total %>%
+  filter(KEGG_ko == "alcohol dehydrogenase") %>%
+  filter(station == "Vegetated", layer == "Bottom", decay_roots == "Before Decay")
+alcohol_dehydrogenase_nv_bd_bo <- fermentation$in_total %>%
+  filter(KEGG_ko == "alcohol dehydrogenase") %>%
+  filter(station == "Nonvegetated", layer == "Bottom", decay_roots == "Before Decay")
+alcohol_dehydrogenase_ve_de_bo <- fermentation$in_total %>%
+  filter(KEGG_ko == "alcohol dehydrogenase") %>%
+  filter(station == "Vegetated", layer == "Bottom", decay_roots == "Decay of Roots\nand Rhizomes")
+alcohol_dehydrogenase_nv_de_bo <- fermentation$in_total %>%
+  filter(KEGG_ko == "alcohol dehydrogenase") %>%
+  filter(station == "Nonvegetated", layer == "Bottom", decay_roots == "Decay of Roots\nand Rhizomes")
+
+```
+To evaluate the role of fermentation processes at these two sites, we selected enzymes from the KEGG database that are thought to be involved in mediating various fermentation products such as carbon dioxide, formate, acetate, acetone, ethanol, lactate, acetoin, propionate, and butyrate (Supplementary Table \@ref(supp-tab:fermentation)). Of these selected enzymes, our dataset contained pyruvate:ferredoxin oxidoreductase, pyruvate formate-lyase, acetyl-CoA hydrolase, acetate kinase, and alcohol, formate, and lactate dehydrogenase (Fig. \@ref(fig:heatmap-fermentation-dsr)). Formate dehydrogenase (`r formate_dehydrogenase$MM_sum %>% sum() * 100` \si{\percent}), pyruvate:ferredoxin oxidoreductase (`r pyruvate_ferredoxin_oxidoreductase$MM_sum %>% sum() * 100` \si{\percent}), and alcohol dehydrogenase (`r alcohol_dehydrogenase$MM_sum %>% sum() * 100` \si{\percent}) were the most prominent of all fermentation-mediating enzymes detected. Significantly (*p* < 0.05) higher proportions of formate dehydrogenase were detected before the decay of roots and rhizomes in the lower middle layer of the vegetated (`r custom_round(x = formate_dehydrogenase_ve_bd_lm$'NAAF (%)')$min` – `r custom_round(x = formate_dehydrogenase_ve_bd_lm$'NAAF (%)')$max` \si{\percent}) compared to the nonvegetated (`r custom_round(x = formate_dehydrogenase_nv_bd_lm$'NAAF (%)')$min` – `r custom_round(x = formate_dehydrogenase_nv_bd_lm$'NAAF (%)')$max` \si{\percent}) site. In contrast, no significant differences were observed during the decay of roots and rhizomes. A similar trend was observed for pyruvate:ferredoxin oxidoreductase in the bottom layer, which had a higher proportion of this enzyme before the decay of roots and rhizomes at the vegetated (`r custom_round(x = pyruvate_ferredoxin_oxidoreductase_ve_bd_bo$'NAAF (%)')$min` – `r custom_round(x = pyruvate_ferredoxin_oxidoreductase_ve_bd_bo$'NAAF (%)')$max` \si{\percent}) compared to the nonvegetated (`r custom_round(x = pyruvate_ferredoxin_oxidoreductase_nv_bd_bo$'NAAF (%)')$min` – `r custom_round(x = pyruvate_ferredoxin_oxidoreductase_nv_bd_bo$'NAAF (%)')$max` \si{\percent}) site. However, no significant differences between sites were observed during the decay of roots and rhizomes (Fig. \@ref(fig:heatmap-fermentation-dsr)). Alcohol dehydrogenase showed significant differences between sites in both the lower middle and bottom layer. In the lower middle layer, a higher proportion of this enzyme was observed at the vegetated than at the nonvegetated site before (vegetated, `r custom_round(x = alcohol_dehydrogenase_ve_bd_lm$'NAAF (%)')$min` – `r custom_round(x = alcohol_dehydrogenase_ve_bd_lm$'NAAF (%)')$max` \si{\percent}; nonvegetated; `r custom_round(x = alcohol_dehydrogenase_nv_bd_lm$'NAAF (%)')$min` – `r custom_round(x = alcohol_dehydrogenase_nv_bd_lm$'NAAF (%)')$max` \si{\percent}) and during the decay of roots and rhizomes (vegetated, `r custom_round(x = alcohol_dehydrogenase_ve_de_lm$'NAAF (%)')$min` – `r custom_round(x = alcohol_dehydrogenase_ve_de_lm$'NAAF (%)')$max` \si{\percent}; nonvegetated; `r custom_round(x = alcohol_dehydrogenase_nv_de_lm$'NAAF (%)')$min` – `r custom_round(x = alcohol_dehydrogenase_nv_de_lm$'NAAF (%)')$max` \si{\percent}). The same pattern of higher proportions of this enzyme at the vegetated site before (vegetated, `r custom_round(x = alcohol_dehydrogenase_ve_bd_bo$'NAAF (%)')$min` – `r custom_round(x = alcohol_dehydrogenase_ve_bd_bo$'NAAF (%)')$max` \si{\percent}; nonvegetated; `r custom_round(x = alcohol_dehydrogenase_nv_bd_bo$'NAAF (%)')$min` – `r custom_round(x = alcohol_dehydrogenase_nv_bd_bo$'NAAF (%)')$max` \si{\percent}) and during roots and rhizomes decay (vegetated, `r custom_round(x = alcohol_dehydrogenase_ve_de_bo$'NAAF (%)')$min` – `r custom_round(x = alcohol_dehydrogenase_ve_de_bo$'NAAF (%)')$max` \si{\percent}; nonvegetated; `r custom_round(x = alcohol_dehydrogenase_nv_de_bo$'NAAF (%)')$min` – `r custom_round(x = alcohol_dehydrogenase_nv_de_bo$'NAAF (%)')$max` \si{\percent}) was also detected in the bottom layer.
+
+```{r, results-dsr}
+
+# Calculate the data for reporting
+dsr <- custom_heatmap(input = naaf, database = KEGG_ko, filter_database_entry = NULL, metadata = metadata,
+                      filter_ko_names = NULL, filter_ko_table = dsr, summarise_by = name)
+
+# Extract the values for reporting
+# (proportion of sulphate adenylyltransferase)
+sulphate_adenylyltransferase <- dsr$formatted_data %>%
+  # Sum the NAAFs from all samples
+  mutate(MM_sum = rowSums(select(., starts_with(match = "MM"))), .after = KEGG_ko) %>%
+  # Recalculate the relative contribution of the database entries
+  mutate(MM_sum =  MM_sum / sum(MM_sum)) %>%
+  # Filter the defined entries
+  filter(KEGG_ko == "sulphate adenylyltransferase")
+
+# Extract the values for reporting
+# (proportion of adenylylsulphate reductase)
+adenylylsulphate_reductase <- dsr$formatted_data %>%
+  # Sum the NAAFs from all samples
+  mutate(MM_sum = rowSums(select(., starts_with(match = "MM"))), .after = KEGG_ko) %>%
+  # Recalculate the relative contribution of the database entries
+  mutate(MM_sum =  MM_sum / sum(MM_sum)) %>%
+  # Filter the defined entries
+  filter(KEGG_ko == "adenylylsulphate reductase")
+
+# Extract the values for reporting
+# (proportion of dissimilatory sulphite reductase)
+dissimilatory_sulphite_reductase <- dsr$formatted_data %>%
+  # Sum the NAAFs from all samples
+  mutate(MM_sum = rowSums(select(., starts_with(match = "MM"))), .after = KEGG_ko) %>%
+  # Recalculate the relative contribution of the database entries
+  mutate(MM_sum =  MM_sum / sum(MM_sum)) %>%
+  # Filter the defined entries
+  filter(KEGG_ko == "dissimilatory sulphite reductase")
+
+# Test the differences between stations and decay periods
+sulphate_adenylyltransferase_test <- dsr$in_total %>%
+  filter(KEGG_ko == "sulphate adenylyltransferase") %>%
+  selected_pairwise_wilcox(select_value_column = "NAAF (%)")
+adenylylsulphate_reductase_test <- dsr$in_total %>%
+  filter(KEGG_ko == "adenylylsulphate reductase") %>%
+  selected_pairwise_wilcox(select_value_column = "NAAF (%)")
+dissimilatory_sulphite_reductase_test <- dsr$in_total %>%
+  filter(KEGG_ko == "dissimilatory sulphite reductase") %>%
+  selected_pairwise_wilcox(select_value_column = "NAAF (%)")
+
+# Extract the values for reporting
+# (sulphate adenylyltransferase)
+sulphate_adenylyltransferase_ve_bd_um <- dsr$in_total %>%
+  filter(KEGG_ko == "sulphate adenylyltransferase") %>%
+  filter(station == "Vegetated", layer == "Upper Middle", decay_roots == "Before Decay")
+sulphate_adenylyltransferase_nv_bd_um <- dsr$in_total %>%
+  filter(KEGG_ko == "sulphate adenylyltransferase") %>%
+  filter(station == "Nonvegetated", layer == "Upper Middle", decay_roots == "Before Decay")
+sulphate_adenylyltransferase_ve_bd_lm <- dsr$in_total %>%
+  filter(KEGG_ko == "sulphate adenylyltransferase") %>%
+  filter(station == "Vegetated", layer == "Lower Middle", decay_roots == "Before Decay")
+sulphate_adenylyltransferase_nv_bd_lm <- dsr$in_total %>%
+  filter(KEGG_ko == "sulphate adenylyltransferase") %>%
+  filter(station == "Nonvegetated", layer == "Lower Middle", decay_roots == "Before Decay")
+sulphate_adenylyltransferase_ve_bd_bo <- dsr$in_total %>%
+  filter(KEGG_ko == "sulphate adenylyltransferase") %>%
+  filter(station == "Vegetated", layer == "Bottom", decay_roots == "Before Decay")
+sulphate_adenylyltransferase_nv_bd_bo <- dsr$in_total %>%
+  filter(KEGG_ko == "sulphate adenylyltransferase") %>%
+  filter(station == "Nonvegetated", layer == "Bottom", decay_roots == "Before Decay")
+sulphate_adenylyltransferase_nv_de_bo <- dsr$in_total %>%
+  filter(KEGG_ko == "sulphate adenylyltransferase") %>%
+  filter(station == "Nonvegetated", layer == "Bottom", decay_roots == "Decay of Roots\nand Rhizomes")
+
+# Extract the values for reporting
+# (adenylylsulphate reductase)
+adenylylsulphate_reductase_ve_bd_lm <- dsr$in_total %>%
+  filter(KEGG_ko == "adenylylsulphate reductase") %>%
+  filter(station == "Vegetated", layer == "Lower Middle", decay_roots == "Before Decay")
+adenylylsulphate_reductase_nv_bd_lm <- dsr$in_total %>%
+  filter(KEGG_ko == "adenylylsulphate reductase") %>%
+  filter(station == "Nonvegetated", layer == "Lower Middle", decay_roots == "Before Decay")
+adenylylsulphate_reductase_ve_de_lm <- dsr$in_total %>%
+  filter(KEGG_ko == "adenylylsulphate reductase") %>%
+  filter(station == "Vegetated", layer == "Lower Middle", decay_roots == "Decay of Roots\nand Rhizomes")
+
+# Extract the values for reporting
+# (dissimilatory sulphite reductase)
+dissimilatory_sulphite_reductase_ve_bd_lm <- dsr$in_total %>%
+  filter(KEGG_ko == "dissimilatory sulphite reductase") %>%
+  filter(station == "Vegetated", layer == "Lower Middle", decay_roots == "Before Decay")
+dissimilatory_sulphite_reductase_nv_bd_lm <- dsr$in_total %>%
+  filter(KEGG_ko == "dissimilatory sulphite reductase") %>%
+  filter(station == "Nonvegetated", layer == "Lower Middle", decay_roots == "Before Decay")
+dissimilatory_sulphite_reductase_ve_bd_bo <- dsr$in_total %>%
+  filter(KEGG_ko == "dissimilatory sulphite reductase") %>%
+  filter(station == "Vegetated", layer == "Bottom", decay_roots == "Before Decay")
+dissimilatory_sulphite_reductase_nv_bd_bo <- dsr$in_total %>%
+  filter(KEGG_ko == "dissimilatory sulphite reductase") %>%
+  filter(station == "Nonvegetated", layer == "Bottom", decay_roots == "Before Decay")
+dissimilatory_sulphite_reductase_nv_de_bo <- dsr$in_total %>%
+  filter(KEGG_ko == "dissimilatory sulphite reductase") %>%
+  filter(station == "Nonvegetated", layer == "Bottom", decay_roots == "Decay of Roots\nand Rhizomes")
+
+```
+To obtain an overview of the different microbial metabolic processes occurring in the sediment of the Bay of Saline, we selected KEGG modules describing methane-, nitrogen-, and sulphur-related processes (Supplementary Table \@ref(supp-tab:metabolism)). Among all tested modules we found proteins involved in the following processes: methanogenesis, nitrogen fixation, dissimilatory nitrate reduction, denitrification, assimilatory and dissimilatory sulphate reduction, and thiosulphate oxidation by the SOX complex. Since one of the most prominent proteins in the functional COG category C (energy production and conversion) was the adenylylsulphate reductase (Fig. \@ref(fig:cog-c-kegg)), which is involved in dissimilatory sulphate reduction, the dynamics of the enzymes involved in this process were investigated in more detail. Of the enzymes involved in dissimilatory sulphate reduction, our dataset contained sulphate adenylyltransferase, adenylylsulphate reductase, and dissimilatory sulphite reductase (Fig. \@ref(fig:heatmap-fermentation-dsr)). The proportion of adenylylsulphate reductase was much higher (`r adenylylsulphate_reductase$MM_sum %>% sum() * 100` \si{\percent}) than that of sulphate adenylyltransferase (`r sulphate_adenylyltransferase$MM_sum %>% sum() * 100` \si{\percent}) and dissimilatory sulphite reductase (`r dissimilatory_sulphite_reductase$MM_sum %>% sum() * 100` \si{\percent}). Significantly (*p* < 0.05) higher proportions of sulphate adenylyltransferase were observed before roots and rhizomes decay at the vegetated than at the nonvegetated site in the upper middle (vegetated, `r custom_round(x = sulphate_adenylyltransferase_ve_bd_um$'NAAF (%)')$min` – `r custom_round(x = sulphate_adenylyltransferase_ve_bd_um$'NAAF (%)')$max` \si{\percent}; nonvegetated, `r custom_round(x = sulphate_adenylyltransferase_nv_bd_um$'NAAF (%)')$min` – `r custom_round(x = sulphate_adenylyltransferase_nv_bd_um$'NAAF (%)')$max` \si{\percent}), lower middle (vegetated, `r custom_round(x = sulphate_adenylyltransferase_ve_bd_lm$'NAAF (%)')$min` – `r custom_round(x = sulphate_adenylyltransferase_ve_bd_lm$'NAAF (%)')$max` \si{\percent}; nonvegetated, `r custom_round(x = sulphate_adenylyltransferase_nv_bd_lm$'NAAF (%)')$min` – `r custom_round(x = sulphate_adenylyltransferase_nv_bd_lm$'NAAF (%)')$max` \si{\percent}), and bottom (vegetated, `r custom_round(x = sulphate_adenylyltransferase_ve_bd_bo$'NAAF (%)')$min` – `r custom_round(x = sulphate_adenylyltransferase_ve_bd_bo$'NAAF (%)')$max` \si{\percent}; nonvegetated, `r custom_round(x = sulphate_adenylyltransferase_nv_bd_bo$'NAAF (%)')$min` – `r custom_round(x = sulphate_adenylyltransferase_nv_bd_bo$'NAAF (%)')$max` \si{\percent}) layer. In addition, significantly higher proportions were also found in the bottom layer of the nonvegetated site during roots and rhizomes decay (`r custom_round(x = sulphate_adenylyltransferase_nv_de_bo$'NAAF (%)')$min` – `r custom_round(x = sulphate_adenylyltransferase_nv_de_bo$'NAAF (%)')$max` \si{\percent}) compared to the period before the decay (`r custom_round(x = sulphate_adenylyltransferase_nv_bd_bo$'NAAF (%)')$min` – `r custom_round(x = sulphate_adenylyltransferase_nv_bd_bo$'NAAF (%)')$max` \si{\percent}). Proportions of the adenylylsulphate reductase showed significant changes in the lower middle layer, where higher values were observed before roots and rhizomes decay at the vegetated (`r custom_round(x = adenylylsulphate_reductase_ve_bd_lm$'NAAF (%)')$min` – `r custom_round(x = adenylylsulphate_reductase_ve_bd_lm$'NAAF (%)')$max` \si{\percent}) compared to the nonvegetated (`r custom_round(x = adenylylsulphate_reductase_nv_bd_lm$'NAAF (%)')$min` – `r custom_round(x = adenylylsulphate_reductase_nv_bd_lm$'NAAF (%)')$max` \si{\percent}) site. Also, in the same layer of the vegetated site significantly higher proportions were detected before roots and rhizomes decay (`r custom_round(x = adenylylsulphate_reductase_ve_bd_lm$'NAAF (%)')$min` – `r custom_round(x = adenylylsulphate_reductase_ve_bd_lm$'NAAF (%)')$max` \si{\percent}) compared to the period of the decay (`r custom_round(x = adenylylsulphate_reductase_ve_de_lm$'NAAF (%)')$min` – `r custom_round(x = adenylylsulphate_reductase_ve_de_lm$'NAAF (%)')$max` \si{\percent}). In the lower middle and bottom layer, dissimilatory sulphite reductase showed higher proportions before roots and rhizomes decay at the vegetated (lower middle, `r custom_round(x = dissimilatory_sulphite_reductase_ve_bd_lm$'NAAF (%)')$min` – `r custom_round(x = dissimilatory_sulphite_reductase_ve_bd_lm$'NAAF (%)')$max` \si{\percent}; bottom, `r custom_round(x = dissimilatory_sulphite_reductase_ve_bd_bo$'NAAF (%)')$min` – `r custom_round(x = dissimilatory_sulphite_reductase_ve_bd_bo$'NAAF (%)')$max` \si{\percent}) than at the novegetated (lower middle, `r custom_round(x = dissimilatory_sulphite_reductase_nv_bd_lm$'NAAF (%)')$min` – `r custom_round(x = dissimilatory_sulphite_reductase_nv_bd_lm$'NAAF (%)')$max` \si{\percent}; bottom, `r custom_round(x = dissimilatory_sulphite_reductase_nv_bd_bo$'NAAF (%)')$min` – `r custom_round(x = dissimilatory_sulphite_reductase_nv_bd_bo$'NAAF (%)')$max` \si{\percent}) site. In addition, significantly higher proportions were detected in the bottom layer of the nonvegetated site during roots and rhizomes decay (`r custom_round(x = dissimilatory_sulphite_reductase_nv_de_bo$'NAAF (%)')$min` – `r custom_round(x = dissimilatory_sulphite_reductase_nv_de_bo$'NAAF (%)')$max` \si{\percent}) compared to the period before the decay (`r custom_round(x = dissimilatory_sulphite_reductase_nv_bd_bo$'NAAF (%)')$min` – `r custom_round(x = dissimilatory_sulphite_reductase_nv_bd_bo$'NAAF (%)')$max` \si{\percent}). In contrast, no significant differences between stations were observed during the decay of roots and rhizomes for either of these enzymes (Fig. \@ref(fig:heatmap-fermentation-dsr)).
+
+(ref:heatmap-fermentation-dsr) Median proportion of enzymes involved in mediating various fermentation products and dissimilatory sulphate reduction in sediment layers at the vegetated and nonvegetated site before and during the decay of roots and rhizomes of *C. nodosa* in the Bay of Saline. The proportion was calculated using the NAAF.
+
+```{r, heatmap-fermentation-dsr, out.width = "90%", fig.align = "center", fig.cap = "(ref:heatmap-fermentation-dsr)", fig.pos = "H"}
+
+include_graphics(path = "../results/figures/heatmap_fermentation_dsr.jpg")
+
+```
+
+\newpage
+
+# Discussion
+
+Seagrass meadow habitats are highly productive ecosystems [@Duarte1999] that support high biodiversity [@Duarte2001]. In the present study, before the decay of the roots and rhizomes of *C. nodosa*, higher values of the number of observed proteins and of the exponential of the Shannon diversity index were found in the vegetated compared to the nonvegetated sediment. These differences were more pronounced in the deeper parts of the sediment (i.e., in the lower middle and bottom layer). After the decay, the differences began to disappear and the values of the number of observed proteins and of the Shannon diversity index were similar to those observed in the sediment previously inhabited by the meadow. In addition, the structure of the metabolic profile of the communities inhabiting the nonvegetated sediment showed a separation between the period before and during the decay of roots and rhizomes, especially in the deeper parts of the sediment and when only proteins for energy production and conversion were considered. This pattern was not observed for the communities at the vegetated site. The difference between the microbial communities inhabiting the vegetated and nonvegetated sediment in the period before roots and rhizomes decay is not surprising, as several studies have found that the presence of seagrass leads to the formation of sediment communities that differ in composition [@Cucio2016; @Ettinger2017; @Zheng2019; @Alsaffar2020; @Sun2020; @Zhang2020; @Markovski2022] and function [@Mohapatra2022] from communities inhabiting nonvegetated sediments. In addition, the higher values of the number of observed proteins and of the Shannon diversity index at the vegetated site before the decay are consistent with other studies reporting higher metabolic diversity and microbial community activity in seagrass sediments compared to nonvegetated areas and with higher organic matter content in seagrass-inhabited sediments [@Duarte2005; @Mohapatra2022]. In addition, the greater differentiation observed in the deeper layers in terms of protein richness and diversity is consistent with a previous study on the same sediment communities, which found a greater community separation between sites in the deeper parts of the sediment [@Markovski2022]. In contrast, the less pronounced differentiation observed for the same parameters and for the structure of the metabolic profile in the top and upper middle layer could be explained by the input of organic matter derived from the vegetated site, making the communities in the upper part of the sediment more similar to each other. Indeed, organic matter imported from the seagrass meadow has been shown to be an important source for prokaryotes in nonvegetated sediments [@Holmer2004].
+
+The lack of differences between sites during the decay of roots and rhizomes in the number of observed proteins and in the exponential of the Shannon diversity index indicates the presence of a more uniform microbial metabolic profile during this period, similar to the metabolic profile observed at the vegetated site prior to decline. This observation is supported by the greater similarity in the structure of the metabolic profile of the communities at the nonvegetated site during decline with the metabolic profile of the communities in the upper sediment prior to decline. Because seagrass meadows fix the sediment by reducing resuspension rates and sediment mixing [@vanKatwijk2010], we hypothesise that resuspension, mixing, and transport between sites are enhanced when the meadow is no longer present, allowing greater input of fresh organic matter to the nonvegetated sediment. Indeed, Najdek et al. (2020) [@Najdek2020] reported higher levels of total lipids and organic matter at the nonvegetated site during the *C. nodosa* decline from May to August 2018. The uniformity of the microbial profile observed at the vegetated site during the study could be the result of maintaining the source of organic matter during the decline of the seagrass through the decay of leaves, roots, and rhizomes [@Peduzzi1991; @Duarte2005; @Liu2017; @Trevathan-Tackett2020].
+
+The analysis of the functional COG categories showed that category C, which includes proteins for energy production and conversion, was the most abundant. This is consistent with the metagenomic study of Habibi et al. (2023) [@Habibi2023], who reported that energy production and conversion was also one of the most abundant functional COG categories in coastal sediments. Among these proteins, F-type H^+^-transporting ATPase subunit c, K^+^-stimulated pyrophosphate-energized sodium pump, and adenylylsulphate reductase subunits A and B exhibited the highest proportion. The pronounced presence of the F-type H^+^-transporting ATPase subunit c in the deeper parts of the nonvegetated sediment prior to decay could be explained by the involvement of this enzyme in the generation of membrane potential. The F-type ATPase can work in both directions, utilising the proton gradient to generate ATP or hydrolysing the ATP to generate the membrane potential [@Kuhlbrandt2019]. The high proportion of the K^+^-stimulated pyrophosphate-energized sodium pump in our dataset indicates the coupling of the energy released by pyrophosphate hydrolysis with the active transport of cations across membranes [@Baykov2013; @Luoto2011]. The proportion of this protein was increased in the deeper parts of the nonvegetated sediment during decay, reflecting the need of microbial communities for more active cross-membrane transport probably due to the increased input of fresh organic matter from the vegetated site. The high proportion of adenylylsulphate reductase subunits A and B among the proteins for energy production and conversion is not surprising, as this enzyme is part of dissimilatory sulphate reduction to sulphide, a predominant terminal pathway of organic matter mineralisation in anoxic seabeds, where it reduces adenosine-5$'$-phosphosulphate to sulphite [@Jorgensen2019]. Furthermore, its significantly higher proportion in the nonvegetated sediment during decay could also be explained by the enhancement of this terminal pathway as a result of increased input of fresh organic matter from the vegetated site.
+
+High molecular weight organic matter in marine sediments must be converted into low molecular weight molecules by various hydrolytic enzymes so that it can be taken up by cells [@Arnosti2011]. Important components of organic matter in coastal marine sediments are carbohydrates, proteins, and lipids [@Burdige2007]. In our dataset, CAZymes and peptidases were more abundant than lipases, which may indicate the importance of carbohydrates and proteins as sources of organic matter for the microbial community. Among the CAZymes, the glycoside hydrolase families GH5 and GH9 were the most abundant. These families contain members capable of hydrolysing plant organic matter such as cellulose [@Aspeborg2012; @Berlemont2016; @Drula2022]. The presence of enzymes acting on cellulose is not surprising as cellulose is a major component of seagrass cell walls and contributes between 20 and 77 \si{\percent} to the dry plant material [@Pfeifer2020; @Torbatinejad2001; @Syed2016]. Metalloendopeptidases and serine endopeptidases made up the vast majority of peptidases in our dataset. A high proportion of these enzymes among the extracellular proteases has already been reported for coastal sediments [@Zhou2013; @Zhang2015a; @Liu2023]. CAZymes and peptidases showed no dynamics from pre-decay to decay of roots and rhizomes, except that CAZymes decreased in the top layer of the nonvegetated sediment and peptidases increased in the upper middle layer of the vegetated sediment. Studies have shown that the molar carbon:nitrogen content in seagrass litter decreases during the decomposition process, which could be explained by increased microbial colonisation of detrital matter and microbial utilisation of exogenous nitrogen which could be related to the observed decrease in CAZymes and increase in peptidases [@Peduzzi1991; @Trevathan-Tackett2020].
+
+Once complex organic compounds have been broken down, the hydrolytic products can be transported into the cells. Prokaryotes utilise various transport proteins, including ABC transporters, to import substrates. Our metaproteomic dataset contained a large amount of ABC transporters for sugars and amino acids. Previous studies of sediment metagenomes also reported a high proportion of ABC transporters [@Habibi2023; @Wang2020a]. The dynamics of ABC transporters reflected the overall dynamics of the metabolic profile. ABC transporters for sugars showed a higher proportion in the deeper parts of the vegetated compared to the nonvegetated sediment before decay of roots and rhizomes and showed no differences between sites during decay, reflecting the higher organic matter content and corresponding demand for ABC transporters in seagrass-inhabited sediments [@Duarte2005; @Mohapatra2022]. In addition, ABC transporters for sugars and amino acids showed an increase in their proportion in the bottom layer of the nonvegetated sediment from the period before decay to the decay of the roots and rhizomes, which could be attributed to changes in organic matter content during the decline of the meadow.
+
+The hydrolytic products of the degradation of complex organic matter, such as simple sugars and amino acids, can be imported and consumed by fermenting microbes. We have identified several enzymes involved in mediating various fermentation products, of which formate dehydrogenase, pyruvate:ferredoxin oxidoreductase, and alcohol dehydrogenase are the most abundant. Microcosm studies of the anaerobic degradation of organic matter in marine sediments revealed that acetate, formate, and ethanol are the most common fermentation products [@Graue2012; @Pelikan2021]. In addition, direct measurements of sediment pore water have revealed the presence of methanol and ethanol [@Zhuang2014]. It is therefore not surprising that the most common fermentation-mediating enzymes we found are putatively involved in the metabolism of acetate, formate, and ethanol. In addition, pyruvate:ferredoxin oxidoreductase and alcohol dehydrogenase have also been reported to be important fermentation-mediating enzymes in Baltic Sea sediments [@Zinke2019]. Similar to the dynamics of the ABC transporters, the fermentation-mediating enzymes also reflected the overall dynamics of the metabolic profile. Formate dehydrogenase, pyruvate:ferredoxin oxidoreductase, and alcohol dehydrogenase showed increased proportions in the deeper parts of the vegetated compared to the nonvegetated sediment before the decay of roots and rhizomes, reflecting the higher organic matter content and possibly a higher fermentation rate in seagrass-inhabited sediments [@Duarte2005; @Mohapatra2022].
+
+The final step in the anaerobic degradation of organic matter involves the utilisation of simpler compounds such as SCFAs, including acetate and formate, and alcohols by the sulphate-reducing bacteria or methanogens [@Arndt2013; @Suominen2021]. One of the most prominent proteins in functional COG category C was adenylylsulphate reductase, which is involved in dissimilatory sulphate reduction (Fig. \@ref(fig:heatmap-fermentation-dsr)). Dissimilatory sulphate reduction is known to be a predominant terminal pathway of organic matter mineralisation in anoxic seabeds [@Jorgensen2019]. Sulphate adenylyltransferase (Sat), adenylylsulphate reductase (Apr), and dissimilatory sulphite reductase (Dsr), enzymes involved in the dissimilatory sulphate reduction pathway shared by known sulphate-reducing microorganisms [@Jorgensen2019], were also detected in our metaproteomic dataset. The dynamics of these enzymes showed some common patterns that were comparable to the overall dynamics of the metabolic profile. Overall, higher proportions of these enzymes were found in the deeper parts of the vegetated compared to the nonvegetated site before roots and rhizomes decay, while such differences were not present during decay. This pattern as well as the overall dynamics of the metabolic profile could be explained by the higher organic matter content in the seagrass-inhabited sediments before decay [@Duarte2005; @Mohapatra2022] and by the increased input of fresh organic matter into the nonvegetated area during decay, probably as a result of increased resuspension rates and sediment mixing [@vanKatwijk2010].
+
+\newpage
+
+# Conclusions
+
+Metaproteomics has great potential to provide insights into the microbial response to environmental change in marine systems [@Saito2019]. In the present study, metaproteomic analysis of MS/MS spectra using sequenced metagenomes from a subset of the same samples led to the identification of `r nrow(formatted_metaproteomic_data)` proteins, more than in other metaproteomic studies of marine sediments [@Stokke2012; @Urich2014; @Bargiela2015; @Gillan2015; @Lin2015]. Using this approach, it was possible to assess the dynamics of the metabolic profile of microbial communities in the sediment of a declining *C. nodosa* meadow and the surrounding nonvegetated sediment. Consequently, it was possible to assess the impact of seagrass decline on the metabolic profile of these communities. Seagrass sediments are considered natural hotspots for carbon sequestration, as some estimates suggest that up to 20 \si{\percent} of global carbon sequestration in marine sediments occurs in these carbon-rich sediments, although they occupy only 0.1 \si{\percent} of the seafloor [@Duarte2013; @Duarte2005a; @Kennedy2010]. Due to the role of seagrasses in carbon sequestration and their decline observed worldwide [@Dunic2021; @Tuya2002; @Orth2006; @Tuya2014; @Fabbri2015; @Orlando-Bonaca2015; @Orlando-Bonaca2019; @Najdek2020], it is important to gain knowledge about the influence of this phenomenon on the processes carried out by the microbial community in the sediment. The results of the present study show that the differences in the metabolic profile between the microbial communities inhabiting the vegetated and nonvegetated sediment, which were observed in the period before the decay of roots and rhizomes, disappear during decay and lead to similar profiles. Moreover, the metabolic profile of the nonvegetated communities approached that of the vegetated communities during decay. This phenomenon was more pronounced in the deeper parts of the nonvegetated sediment, indicating a stronger influence of decay on the metabolic profile of the communities in this sediment layer.
+
+\newpage
+
+# Declarations
+
+## Ethics approval and consent to participate
+
+\noindent
+Not applicable.
+
+## Consent for publication
+
+\noindent
+Not applicable.
+
+## Availability of data and material
+
+The raw metagenomic sequences obtained in this study have been deposited in the European Nucleotide Archive (ENA) at EMBL-EBI under the accession number PRJEB75905 (<https://www.ebi.ac.uk/ena/browser/view/PRJEB75905>). The mass spectrometry proteomics data have been deposited in the ProteomeXchange Consortium via the PRIDE [@Perez-Riverol2022] partner repository with the dataset identifier PXD054602. Following the recommendations given from the Riffomonas project to enhance data reproducibility (<http://www.riffomonas.org>), the detailed analysis procedure, including the R Markdown file for this article, is available as a GitHub repository (<https://github.com/MicrobesRovinj/Markovski_SalineSedimentMetap_EnvironMicrobiome_2025>).
+
+## Competing interests
+
+\noindent
+The authors declare that they have no competing interests.
+
+## Funding
+
+This study was funded by the Croatian Science Foundation as part of the MICRO-SEAGRASS project (project number IP-2016-06-7118). GJH and ZZ were supported by the Austrian Science Fund (FWF; project number I 4978-B).
+
+## Authors' contributions
+
+MN, GJH, and MK designed the study. MM, MN, ZZ, and MK performed sampling and laboratory analyses. MM, ZZ, and MK analysed the data. MM prepared the manuscript with editorial help from MN, ZZ, GJH, and MK. All authors reviewed the manuscript and approved the final submitted version.
+
+## Acknowledgements
+
+We thank the Division of Computational Systems Biology (CUBE) of the University of Vienna for access to the Life Science Compute Cluster (LiSC) and Paolo Paliaga for his help with sampling.
+
+\newpage
+
+# References
+
+::: {#refs}
+:::

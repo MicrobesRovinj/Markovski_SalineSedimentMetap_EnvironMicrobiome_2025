@@ -1,0 +1,74 @@
+livK; branched-chain amino acid transport system substrate-binding protein	amino acid
+rbsB; ribose transport system substrate-binding protein	sugar
+aapJ, bztA; general L-amino acid transport system substrate-binding protein	amino acid
+msmE; raffinose/stachyose/melibiose transport system substrate-binding protein	sugar
+pstS; phosphate transport system substrate-binding protein	phosphate
+xylF; D-xylose transport system substrate-binding protein	sugar
+ABC.SS.S; simple sugar transport system substrate-binding protein	sugar
+eryG; erythritol transport system substrate-binding protein	polyol
+oppA, mppA; oligopeptide transport system substrate-binding protein	peptide
+ABC.PE.S; peptide/nickel transport system substrate-binding protein	peptide
+ABC.MS.S; multiple sugar transport system substrate-binding protein	sugar
+potD; spermidine/putrescine transport system substrate-binding protein	mineral and organic ion
+afuA, fbpA; iron(III) transport system substrate-binding protein	mineral and organic ion
+aglE, ggtB; alpha-glucoside transport system substrate-binding protein	sugar
+phnD; phosphonate transport system substrate-binding protein	phosphate
+dppA; dipeptide transport system substrate-binding protein	peptide
+gtsA, glcE; glucose/mannose transport system substrate-binding protein	sugar
+rhaS; rhamnose transport system substrate-binding protein	sugar
+lplA; putative aldouronate transport system substrate-binding protein	sugar
+glpV; glycerol transport system substrate-binding protein	polyol
+nrtA, nasF, cynA; nitrate/nitrite transport system substrate-binding protein	mineral and organic ion
+ugpB; sn-glycerol 3-phosphate transport system substrate-binding protein	polyol
+K17213; inositol transport system substrate-binding protein	polyol
+chvE; putative multiple sugar transport system substrate-binding protein	sugar
+opuC; osmoprotectant transport system substrate-binding protein	mineral and organic ion
+ABC.PA.S; polar amino acid transport system substrate-binding protein	amino acid
+proX; glycine betaine/proline transport system substrate-binding protein	mineral and organic ion
+alsB; D-allose transport system substrate-binding protein	sugar
+urtA; urea transport system substrate-binding protein	urea
+nikA, cntA; nickel transport system substrate-binding protein	mineral and organic ion
+frcB; fructose transport system substrate-binding protein	sugar
+ABC.SN.S; NitT/TauT family transport system substrate-binding protein	mineral and organic ion
+glnH; glutamine transport system substrate-binding protein	amino acid
+smoE, mtlE; polyol transport system substrate-binding protein	polyol
+xltC; putative xylitol transport system substrate-binding protein	polyol
+mlaD, linM; phospholipid/cholesterol/gamma-HCH transport system substrate-binding protein	lipid
+aotJ; arginine/ornithine transport system substrate-binding protein	amino acid
+sapA; cationic peptide transport system substrate-binding protein	peptide
+tauA; taurine transport system substrate-binding protein	mineral and organic ion
+gsiB; glutathione transport system substrate-binding protein	peptide
+yejA; microcin C transport system substrate-binding protein	peptide
+peb1A, glnH; aspartate/glutamate/glutamine transport system substrate-binding protein	amino acid
+gltI, aatJ; glutamate/aspartate transport system substrate-binding protein	amino acid
+thuE, lpqY; trehalose/maltose transport system substrate-binding protein	sugar
+lacE, araN; lactose/L-arabinose transport system substrate-binding protein	sugar
+malE; maltose/maltodextrin transport system substrate-binding protein	sugar
+bxlE; xylobiose transport system substrate-binding protein	sugar
+tcyA, tcyJ, fliY; L-cystine transport system substrate-binding protein	amino acid
+ibpA; inositol transport system substrate-binding protein	polyol
+cycB, ganO, mdxE; arabinogalactan oligomer / maltooligosaccharide transport system substrate-binding protein	sugar
+modA; molybdate transport system substrate-binding protein	mineral and organic ion
+ngcE; N-acetylglucosamine transport system substrate-binding protein	sugar
+dasA; N,N'-diacetylchitobiose transport system substrate-binding protein	sugar
+araN; arabinooligosaccharide transport system substrate-binding protein	sugar
+aguE; alpha-1,4-digalacturonate transport system substrate-binding protein	sugar
+ABC.SP.S; putative spermidine/putrescine transport system substrate-binding protein	mineral and organic ion
+potF, spuD, spuE; putrescine transport system substrate-binding protein	mineral and organic ion
+chiE; putative chitobiose transport system substrate-binding protein	sugar
+mlaC; phospholipid transport system substrate-binding protein	lipid
+phnS; 2-aminoethylphosphonate transport system substrate-binding protein	mineral and organic ion
+cebE; cellobiose transport system substrate-binding protein	sugar
+hisJ; histidine transport system substrate-binding protein	amino acid
+treS; trehalose transport system substrate-binding protein	sugar
+artI; arginine transport system substrate-binding protein	amino acid
+inoE; inositol-phosphate transport system substrate-binding protein	polyol
+araF; L-arabinose transport system substrate-binding protein	sugar
+msmE; fructooligosaccharide transport system substrate-binding protein	sugar
+dppE; dipeptide transport system substrate-binding protein	peptide
+gluB; glutamate transport system substrate-binding protein	amino acid
+togB; oligogalacturonide transport system substrate-binding protein	sugar
+tupA, vupA; tungstate transport system substrate-binding protein	mineral and organic ion
+attC; mannopine transport system substrate-binding protein	mineral and organic ion
+K01989; putative tryptophan/tyrosine transport system substrate-binding protein	amino acid
+smoE, mtlE, mscE; polyol transport system substrate-binding protein	polyol

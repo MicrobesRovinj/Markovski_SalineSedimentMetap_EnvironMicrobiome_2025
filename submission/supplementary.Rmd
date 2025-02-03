@@ -1,0 +1,383 @@
+---
+title: "**Supplementary material**"
+subtitle: "**Influence of seagrass decline on the metabolic profile of sediment microbial communities**"
+documentclass: article
+geometry: margin = 1.0in
+fontsize: 12 pt
+bibliography: references.bib
+csl: citation_style.csl #Get themes at https://github.com/citation-style-language/styles
+output:
+  bookdown::pdf_document2:
+    includes:
+      in_header: preamble.tex
+      before_body: before_body_supplementary.tex
+    keep_tex: true
+    latex_engine: pdflatex
+    toc: false
+    number_sections: false
+---
+
+```{r, knitr_settings, eval = TRUE, echo = FALSE, cache = FALSE}
+
+################################################################################
+# Change the default values of chunk options
+################################################################################
+
+opts_chunk$set("tidy" = TRUE)
+opts_chunk$set("echo" = FALSE)
+opts_chunk$set("eval" = TRUE)
+opts_chunk$set("warning" = FALSE)
+opts_chunk$set("cache" = FALSE)
+opts_chunk$set("message" = FALSE)
+
+################################################################################
+# Define a custom hook function to format output from inline R expressions
+################################################################################
+
+# Define a custom hook function to format output from inline R expressions
+# (This enables number formatting during inline R code execution.)
+inline_hook <- function(x){
+	
+  print(x)
+  
+	if(is.list(x)){
+		x <- unlist(x)
+	}
+  
+	if(is.numeric(x)){
+		if(abs(x - round(x)) < .Machine$double.eps ^ 0.5){
+			paste(format(x, big.mark = ',', digits = 0, scientific = FALSE))
+		} else {
+			paste(format(x, big.mark = ',', digits = 1, nsmall = 1, scientific = FALSE))
+		}
+	} else {
+    	paste(x)
+	  }
+  }
+
+# Register the custom inline hook
+knitr::knit_hooks$set(inline = inline_hook)
+
+```
+\vspace{\fill}
+
+Marsej Markovski^1^, Mirjana Najdek^1^, Zihao Zhao^2^, Gerhard J. Herndl^2,3^, and Marino Korlević^1\*^
+
+1.  Centre for Marine Research, Ruđer Bošković Institute, Croatia
+
+2.  Department of Functional and Evolutionary Ecology, University of Vienna, Austria
+
+3.  Department of Marine Microbiology and Biogeochemistry, Royal Netherlands Institute for Sea Research (NIOZ), Utrecht University, The Netherlands
+
+^\*^To whom correspondence should be addressed:
+
+Marino Korlević
+
+G. Paliaga 5, 52210 Rovinj, Croatia
+
+Tel.: +385 52 804 768
+
+e-mail: [marino.korlevic\@irb.hr](mailto:marino.korlevic@irb.hr){.email}
+
+Running title: Metabolic profile of seagrass sediment communities
+
+```{=latex}
+
+\sisetup{mode=text}
+\setlength\parindent{24pt}
+\newpage
+
+```
+## Supplementary tables
+
+(ref:samples) Sample ID, sampling date and site, and sediment depth and layer for each protein sample with successfully obtained MS/MS spectra.
+
+```{=latex}
+
+% Begin the singlespace environment so that
+% rows in the longtable are single spaced
+\begin{singlespace}
+
+```
+
+```{r, samples, tab.cap = "(ref:samples)"}
+
+# Load metadata
+metadata <- read_tsv(file = "data/raw/metadata.tsv")
+
+# Remove samples with failed MS/MS run
+metadata <- metadata %>%
+  filter(msms_raw != "run_failure")
+
+# Format metadata entries
+metadata <- metadata %>%
+  # Format labels using custom function
+  format_labels() %>%
+  # Format dates
+  mutate(date = format(date, "%d %B %Y")) %>%
+  mutate(date = str_replace(date, "^0", "")) %>%
+  # Format sediment depth values
+  mutate(`depth_(cm)` = str_replace(`depth_(cm)`, "-", " – "))
+
+# Select the columns to be added to the table
+metadata <- metadata %>%
+  select(ID, date, station, `depth_(cm)`, layer)
+
+# Create table
+kable(x = metadata, format = "latex",
+      col.names = c("Sample ID", "Date", "Site", "Sediment Depth (cm)", "Sediment Layer"), align = "c",
+      caption = opts_current$get("tab.cap"), escape = TRUE, booktabs = TRUE,
+      linesep = "", longtable = TRUE) %>%
+  kable_styling(latex_options = c("hold_position", "repeat_header"), font_size = 10) %>%
+  row_spec(row = 0, bold = TRUE) %>%
+  collapse_rows(columns = c(2, 3), valign = "middle", latex_hline = "major", target = 3)
+
+```
+
+```{=latex}
+
+% End the singlespace environment
+\end{singlespace}
+
+```
+\newpage
+
+```{=latex}
+
+\blandscape
+
+```
+(ref:metagenomes) Sample ID, sampling site, sediment layer and depth, sampling date, number of raw sequence pairs, number of assembled contigs by MEGAHIT, N50 and L50 assembly statistics, number of predicted CDSs by Prodigal, and number of eggNOG-mapper annotated CDSs.
+
+```{r, metagenomes, tab.cap = "(ref:metagenomes)"}
+
+# Load the change of the number of sequences throughout the
+# metaproteomic analysis
+seq_num <- read_tsv(file = "data/raw/metagenomes_seq_num.tsv")
+
+# Load assembly statistics
+contig_statistics <- read_tsv(file = "data/raw/metagenomes_contig_statistics.tsv")
+contig_statistics <- contig_statistics %>%
+  mutate(sample = str_replace(string = filename, pattern = ".contigs.fa$", "")) %>%
+  select(-filename)
+
+# Load the number of annotated CDSs
+annotated_cds_num <- read_tsv(file = "data/raw/metagenomes_annotated_cds_num.tsv")
+
+# Join the loaded data into one table
+metagenomes <- inner_join(x = seq_num, y = contig_statistics, by = c("sample" = "sample")) %>%
+  inner_join(y = annotated_cds_num, by = c("sample" = "sample"))
+
+# Replace IMGM sequencing ID with DNA sample ID, add sampling site, layer, depth, and date,
+# and format the sampling date
+metagenomes <- metagenomes %>%
+  mutate(sample = case_when(sample == "19181-0005" ~ "356",
+                            sample == "19181-0006" ~ "358",
+                            sample == "20151-0003" ~ "360",
+                            sample == "20151-0004" ~ "362",
+                            TRUE                  ~ sample)) %>%
+  mutate(station = case_when(sample == "356" | sample == "358" ~ "Vegetated",
+                             sample == "360" | sample == "362" ~ "Nonvegetated",
+                             TRUE                              ~ sample), .after = sample) %>%
+  mutate(layer_depth = case_when(sample == "356" | sample == "360" ~ "Top (0 - 1 cm)",
+                                 sample == "358" | sample == "362" ~ "Lower Middle (4 - 5 cm)",
+                                 TRUE                              ~ sample), .after = station) %>%
+  mutate(date = as.Date("08.08.2018", "%d.%m.%Y"), .after = station) %>%
+  mutate(date = str_replace(string = format(date, "%d %B %Y"), pattern = "^0", replacement = ""))
+
+# Select the columns
+metagenomes <- metagenomes %>%
+  select(sample, station, layer_depth, date, rawF, n_contigs, ctg_N50, ctg_L50, cds_prot, annotated_cds)
+
+# Format the numbers in the table
+metagenomes <- metagenomes %>%
+  mutate(across(.cols = c(rawF, n_contigs, ctg_N50, cds_prot, annotated_cds),
+                .fns = ~ format(x = .x, big.mark = ",")))
+
+
+# Create table
+metagenomes %>%
+  kable(format = "latex", col.names = c("Sample ID", "Site", "Layer (Depth)", "Date",
+                                        "No. of Raw Sequence Pairs", "No. of Contigs",
+                                        "N50\\textsuperscript{*}", "L50 (bp)\\textsuperscript{*}",
+                                        "No. of Predicted CDSs", "No. of Annotated CDSs"),
+        align = "c", caption = opts_current$get("tab.cap"),
+        escape = FALSE, booktabs = TRUE, linesep = "", longtable = FALSE) %>%
+  kable_styling(latex_options = "hold_position", font_size = 10) %>%
+  row_spec(row = 0, bold = TRUE) %>%
+  column_spec(column = 5, width = "6.4 em", latex_valign = "m") %>%
+  column_spec(column = c(1, 6, 9, 10), width = "4.3 em", latex_valign = "m") %>%
+  collapse_rows(columns = c(2, 4), valign = "middle", latex_hline = "major", target = 2) %>%
+  footnote(symbol = "The notation was preserved from the original output of BBTools statswrapper.sh.")
+
+```
+
+```{=latex}
+
+\elandscape
+
+```
+\newpage
+
+(ref:cog) The proportion of each COG functional category (NAAF) and the number of proteins assigned to each category. The proportion and the number of proteins assigned to category C (energy production and conversion) are highlighted.
+
+```{r, cog, tab.cap = "(ref:cog)"}
+
+# Load data
+load(file = "results/numerical/cog_number.Rdata")
+load(file = "results/numerical/cog_naaf.Rdata")
+
+# Load COG functional category names
+cog_names <- read_tsv(file = "data/raw/cog_categories.tsv")
+
+# Select the columns to be added to the table
+cog_naaf <- cog_naaf %>%
+  select(COG_category, MM_sum)
+cog_number <- cog_number %>%
+  select(COG_category, MM_total)
+
+# Merge NAAFs and the number of proteins for every COG category
+cog_naaf_number <- inner_join(x = cog_naaf, y = cog_number, by = "COG_category")
+
+# Arrange data and add COG functional category names
+cog_naaf_number <- cog_naaf_number %>%
+  arrange(desc(MM_sum)) %>%
+  mutate(COG_category = if_else(COG_category %in% cog_names$code,
+                                paste0(COG_category, " – ",
+                                       cog_names$name[match(COG_category,
+                                                            cog_names$code)]), COG_category)) %>%
+  mutate(COG_category = str_replace(COG_category, "multiple_cog –", ""))
+
+# Calculate total NAAF and number of proteins and add result to tibble
+cog_naaf_number_total <- cog_naaf_number %>%
+  summarise(COG_category = "Total", MM_sum = sum(MM_sum), MM_total = sum(MM_total))
+cog_naaf_number <- cog_naaf_number %>%
+  bind_rows(cog_naaf_number_total)
+
+# Format numbers
+cog_naaf_number <- cog_naaf_number %>%
+  mutate(MM_sum = round(MM_sum * 100, digits = 2)) %>%
+  mutate(MM_total = format(x = MM_total, big.mark = ","))
+
+# Create table
+kable(x = cog_naaf_number, format = "latex",
+      col.names = c("COG Category", "NAAF (%)", "Number of Proteins"), align = "lrr",
+      caption = opts_current$get("tab.cap"), escape = TRUE, booktabs = TRUE,
+      linesep = c(rep(x = "", times = 19), "\\addlinespace"), longtable = FALSE) %>%
+  kable_styling(latex_options = "hold_position", font_size = 10) %>%
+  row_spec(row = 0, bold = TRUE) %>%
+  row_spec(row = 1, bold = TRUE)
+
+```
+\newpage
+
+(ref:fermentation) Overview of selected enzymes, their enzymatic products, and corresponding KO entries used to evaluate mediation processes of various fermentation products.
+
+```{r, fermentation, tab.cap = "(ref:fermentation)"}
+
+# Load the data for KEGG KO entries involved in fermentation
+fermentation <- read_tsv(file = "data/raw/fermentation.tsv",
+                         col_names = c("name", "enzyme_product", "KEGG_ko", "KO_name"))
+
+# Select the columns to be added to the table
+fermentation <- fermentation %>%
+  select(name, enzyme_product, KEGG_ko)
+
+# Format the enzyme names
+fermentation <- fermentation %>%
+  mutate(name = str_replace(name, "^pyruvate:ferredoxin oxidoreductase$", "Pyruvate:ferredoxin oxidoreductase")) %>%
+  mutate(name = str_replace(name, "^pyruvate formate-lyase$", "Pyruvate formate-lyase")) %>%
+  mutate(name = str_replace(name, "^formate dehydrogenase$", "Formate dehydrogenase")) %>%
+  mutate(name = str_replace(name, "^alcohol dehydrogenase$", "Alcohol dehydrogenase")) %>%
+  mutate(name = str_replace(name, "^acetyl-CoA hydrolase$", "Acetyl-CoA hydrolase")) %>%
+  mutate(name = str_replace(name, "^acetate kinase$", "Acetate kinase")) %>%
+  mutate(name = str_replace(name, "^acetoacetate decarboxylase$", "Acetoacetate decarboxylase")) %>%
+  mutate(name = str_replace(name, "^lactate dehydrogenase$", "Lactate dehydrogenase")) %>%
+  mutate(name = str_replace(name, "^acetolactate decarboxylase$", "Acetolactate decarboxylase")) %>%
+  mutate(name = str_replace(name, "^methylmalonyl-CoA decarboxylase$", "Methylmalonyl-CoA decarboxylase")) %>%
+  mutate(name = str_replace(name, "^lactoyl-CoA dehydratase$", "Lactoyl-CoA dehydratase")) %>%
+  mutate(name = str_replace(name, "^propionaldehyde dehydrogenase$", "Propionaldehyde dehydrogenase")) %>%
+  mutate(name = str_replace(name, "^butyrate kinase$", "Butyrate kinase")) %>%
+  mutate(name = str_replace(name, "^butyryl-CoA:acetate CoA transferase$", "Butyryl-CoA:acetate CoA transferase"))
+
+# Format the enzyme product names
+fermentation <- fermentation %>%
+  mutate(enzyme_product = str_replace(enzyme_product, "^acetyl-CoA, carbon dioxide$", "Acetyl-CoA, carbon dioxide")) %>%
+  mutate(enzyme_product = str_replace(enzyme_product, "^acetyl-CoA, formate$", "Acetyl-CoA, formate")) %>%
+  mutate(enzyme_product = str_replace(enzyme_product, "^acetate$", "Acetate")) %>%
+  mutate(enzyme_product = str_replace(enzyme_product, "^acetone, carbon dioxide$", "Acetone, carbon dioxide")) %>%
+  mutate(enzyme_product = str_replace(enzyme_product, "^ethanol$", "Ethanol")) %>%
+  mutate(enzyme_product = str_replace(enzyme_product, "^carbon dioxide$", "Carbon dioxide")) %>%
+  mutate(enzyme_product = str_replace(enzyme_product, "^lactate$", "Lactate")) %>%
+  mutate(enzyme_product = str_replace(enzyme_product, "^acetoin, carbon dioxide$", "Acetoin, carbon dioxide")) %>%
+  mutate(enzyme_product = str_replace(enzyme_product, "^propionyl-CoA, carbon dioxide$", "Propionyl-CoA, carbon dioxide")) %>%
+  mutate(enzyme_product = str_replace(enzyme_product, "^acryloyl-CoA$", "Acryloyl-CoA")) %>%
+  mutate(enzyme_product = str_replace(enzyme_product, "^propionyl-CoA$", "Propionyl-CoA")) %>%  
+  mutate(enzyme_product = str_replace(enzyme_product, "^butyrate$", "Butyrate")) %>%
+  mutate(enzyme_product = str_replace(enzyme_product, "^butyrate, acetyl-CoA$", "Butyrate, acetyl-CoA"))
+
+# Create table
+kable(x = fermentation, format = "latex",
+      col.names = c("Name", "Product", "KO Entry"), align = "c",
+      caption = opts_current$get("tab.cap"), escape = TRUE, booktabs = TRUE,
+      linesep = "", longtable = FALSE) %>%
+  kable_styling(latex_options = "hold_position", font_size = 10) %>%
+  row_spec(row = 0, bold = TRUE) %>%
+  column_spec(column = c(1, 2), width = "16.0 em") %>%
+  column_spec(column = 3, width = "11.0 em") %>%
+  collapse_rows(columns = c(1, 2), valign = "middle", latex_hline = "major", target = 1)
+
+```
+\newpage
+
+(ref:metabolism) Overview of KEGG modules used for assessing various types of microbial metabolism.
+
+```{r, metabolism, tab.cap = "(ref:metabolism)"}
+
+# Load the KEGG modules for the selected metabolisms
+metabolism <- read_tsv(file = "data/raw/metabolism.tsv", col_names = c("name", "KEGG_module"))
+
+# Create table
+kable(x = metabolism, format = "latex",
+      col.names = c("Type of Metabolism", "KEGG Module"), align = "c",
+      caption = opts_current$get("tab.cap"), escape = TRUE, booktabs = TRUE,
+      linesep = "", longtable = FALSE) %>%
+  kable_styling(latex_options = "hold_position", font_size = 10) %>%
+  row_spec(row = 0, bold = TRUE) %>%
+  column_spec(column = 1, width = "20.0 em") %>%
+  column_spec(column = 2, width = "11.0 em") %>%
+  collapse_rows(columns = 1, valign = "middle", latex_hline = "major", target = NULL)
+
+```
+\newpage
+
+(ref:dsr) Enzymes involved in dissimilatory sulphate reduction and their KO entries.
+
+```{r, dsr, tab.cap = "(ref:dsr)"}
+
+# Load the data for KEGG KO entries involved in dissimilatory sulphate reduction
+dsr <- read_tsv(file = "data/raw/dsr.tsv",
+                col_names = c("name", "KEGG_ko", "KO_name"))
+
+# Select the columns to be added to the table
+dsr <- dsr %>%
+  select(name, KEGG_ko)
+
+# Format the enzyme names
+dsr <- dsr %>%
+  mutate(name = str_replace(name, "^sulphate adenylyltransferase$", "Sulphate adenylyltransferase")) %>%
+  mutate(name = str_replace(name, "^adenylylsulphate reductase$", "Adenylylsulphate reductase")) %>%
+  mutate(name = str_replace(name, "^dissimilatory sulphite reductase$", "Dissimilatory sulphite reductase"))
+
+# Create table
+kable(x = dsr, format = "latex",
+      col.names = c("Name", "KO Entry"), align = "c",
+      caption = opts_current$get("tab.cap"), escape = TRUE, booktabs = TRUE,
+      linesep = "", longtable = FALSE) %>%
+  kable_styling(latex_options = "hold_position", font_size = 10) %>%
+  row_spec(row = 0, bold = TRUE) %>%
+  column_spec(column = 1, width = "20.0 em") %>%
+  column_spec(column = 2, width = "11.0 em") %>%
+  collapse_rows(columns = 1, valign = "middle", latex_hline = "major", target = NULL)
+
+```

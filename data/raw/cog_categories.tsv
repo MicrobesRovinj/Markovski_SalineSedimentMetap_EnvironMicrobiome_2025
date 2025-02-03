@@ -1,0 +1,29 @@
+code	name	colour
+J	Translation, ribosomal structure and biogenesis	darkmagenta
+A	RNA processing and modification	violet
+K	Transcription	mistyrose
+L	Replication, recombination and repair	dodgerblue3
+B	Chromatin structure and dynamics	turquoise3
+D	Cell cycle control, cell division, chromosome partitioning	cornflowerblue
+Y	Nuclear structure	lightcyan
+V	Defense mechanisms	forestgreen
+T	Signal transduction mechanisms	limegreen
+M	Cell wall/membrane/envelope biogenesis	darkolivegreen3
+N	Cell motility	turquoise
+Z	Cytoskeleton	darkseagreen1
+W	Extracellular structures	darkred
+U	Intracellular trafficking, secretion, and vesicular transport	firebrick1
+O	Posttranslational modification, protein turnover, chaperones	darksalmon
+X	Mobilome: prophages, transposons	darkorange3
+C	Energy production and conversion	sienna
+G	Carbohydrate transport and metabolism	darkkhaki
+E	Amino acid transport and metabolism	bisque3
+F	Nucleotide transport and metabolism	orange3
+H	Coenzyme transport and metabolism	orange
+I	Lipid transport and metabolism	gold2
+P	Inorganic ion transport and metabolism	yellow
+Q	Secondary metabolites biosynthesis, transport and catabolism	khaki
+R	General function prediction only	greenyellow
+multiple_cog	Multiple functional categories	ivory
+S	Function unknown	gray
+no_cog	No COG category available	gray40

@@ -1,0 +1,2 @@
+This directory contains processed data.
+

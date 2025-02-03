@@ -1,0 +1,750 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  12 pt,
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin = 1.0in]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Font
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Set font encoding to T1 (8-bit encoding, 256 glyphs) 
+% (improved text handling, especially with non-English
+% languages and text containing special characters)
+\usepackage[T1]{fontenc}
+
+% Set font to URW Nimbus Roman
+% (Times New Roman alternative)
+\usepackage{mathptmx}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Typsetting
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Include the package containing commands for page orientation
+\usepackage{pdflscape}
+% Create a new custom command for starting a landscape block
+\newcommand{\blandscape}{\begin{landscape}}
+% Create a new custom command for ending a landscape block
+\newcommand{\elandscape}{\end{landscape}}
+
+% Include package providing fine-tuned typographic enhancements
+\usepackage{microtype}
+
+% Supress hyphenation
+\usepackage[none]{hyphenat}
+
+% Include package for setting spacing between lines
+\usepackage{setspace}
+% Set line spacing
+\doublespacing
+
+% Indent first paragraph of each section (including chapters)
+\usepackage{indentfirst}
+
+% Set vertical space between paragraphs
+\setlength{\parskip}{1em}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Line numbers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Include package for line numbering
+\usepackage{lineno}
+% Set font style and size of line numbers
+\renewcommand{\linenumberfont}{\normalfont\tiny}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Figures and tables
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Include package enhancing figure and table placement
+% (provides "H" placement specifier forcing the float to
+% appear exactly where it is defined)
+\usepackage{float}
+
+% Include package used to create tables with cells spanning multiple rows
+\usepackage{multirow}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Captions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Use a period as separator between the label and the caption text,
+% and make the label bold
+\usepackage[labelsep=space, labelfont=bf]{caption}
+% Set caption text to be justified
+\captionsetup{justification=justified}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Referencing
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Include the package xr (external references) to allow
+% referencing labels from another file
+\usepackage{xr}
+% Specify the name of the file used for additional
+% referencing and define the prefix for the labels
+% from the external document
+\externaldocument[supp-]{supplementary}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Measurement units
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Include the package that facilitates consistent formatting
+% of scientific units and numbers
+\usepackage{siunitx}
+% Define unit \molar as moles per cubic decimeter
+\DeclareSIUnit\molar{\mole\per\cubic\deci\metre}
+% Define unit \Molar as small caps "M"  
+\DeclareSIUnit\Molar{\textsc{m}}
+% Define unit \cells as the text "cells"
+\DeclareSIUnit\cells{\text{cells}}
+% Define unit \litre as lowercase "l"
+\DeclareSIUnit\litre{l}
+% Define label \vV as v/v
+\DeclareSIUnit{\vV}{v/v}
+% Define label \wW as w/w
+\DeclareSIUnit{\wW}{w/w}
+% Define unit \bp as bp
+\DeclareSIUnit{\bp}{bp}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chemical formulae
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Include package for typesetting chemical formulas
+\usepackage{chemformula}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Supplementary material},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{\textbf{Supplementary material}}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{\textbf{Influence of seagrass decline on the metabolic profile of sediment microbial communities}}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Captions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Set the name for figures to "Supplementary Figure"
+\renewcommand{\figurename}{Supplementary Figure}
+% Set the name for tables to "Supplementary Table"
+\renewcommand{\tablename}{Supplementary Table}
+% Use Arabic numerals to number figures and format
+% figure caption numbers as S1, S2, S3, and so on
+\renewcommand{\thefigure}{S\arabic{figure}}
+% Use Arabic numerals to number tables and format
+% table caption numbers as S1, S2, S3, and so on
+\renewcommand{\thetable}{S\arabic{table}}
+
+\vspace{\fill}
+
+Marsej Markovski\textsuperscript{1}, Mirjana Najdek\textsuperscript{1}, Zihao Zhao\textsuperscript{2}, Gerhard J. Herndl\textsuperscript{2,3}, and Marino Korlević\textsuperscript{1*}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Centre for Marine Research, Ruđer Bošković Institute, Croatia
+\item
+  Department of Functional and Evolutionary Ecology, University of Vienna, Austria
+\item
+  Department of Marine Microbiology and Biogeochemistry, Royal Netherlands Institute for Sea Research (NIOZ), Utrecht University, The Netherlands
+\end{enumerate}
+
+\textsuperscript{*}To whom correspondence should be addressed:
+
+Marino Korlević
+
+G. Paliaga 5, 52210 Rovinj, Croatia
+
+Tel.: +385 52 804 768
+
+e-mail: \href{mailto:marino.korlevic@irb.hr}{\nolinkurl{marino.korlevic@irb.hr}}
+
+Running title: Metabolic profile of seagrass sediment communities
+
+\sisetup{mode=text}
+\setlength\parindent{24pt}
+\newpage
+
+\hypertarget{supplementary-tables}{%
+\subsection{Supplementary tables}\label{supplementary-tables}}
+
+
+
+% Begin the singlespace environment so that
+% rows in the longtable are single spaced
+\begin{singlespace}
+
+\begingroup\fontsize{10}{12}\selectfont
+
+\begin{longtable}[t]{ccccc}
+\caption{\label{tab:samples}Sample ID, sampling date and site, and sediment depth and layer for each protein sample with successfully obtained MS/MS spectra.}\\
+\toprule
+\textbf{Sample ID} & \textbf{Date} & \textbf{Site} & \textbf{Sediment Depth (cm)} & \textbf{Sediment Layer}\\
+\midrule
+\endfirsthead
+\caption[]{\label{tab:samples}Sample ID, sampling date and site, and sediment depth and layer for each protein sample with successfully obtained MS/MS spectra. \textit{(continued)}}\\
+\toprule
+\textbf{Sample ID} & \textbf{Date} & \textbf{Site} & \textbf{Sediment Depth (cm)} & \textbf{Sediment Layer}\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+MM\_1 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_2 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_3 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_4 & \multirow{-4}{*}{\centering\arraybackslash 12 July 2017} & \multirow{-4}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_5 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_6 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_7 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_8 & \multirow{-4}{*}{\centering\arraybackslash 12 July 2017} & \multirow{-4}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_9 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_10 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_11 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_12 & \multirow{-4}{*}{\centering\arraybackslash 9 August 2017} & \multirow{-4}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_13 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_14 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_15 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_16 & \multirow{-4}{*}{\centering\arraybackslash 9 August 2017} & \multirow{-4}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_17 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_18 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_19 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_20 & \multirow{-4}{*}{\centering\arraybackslash 14 September 2017} & \multirow{-4}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_21 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_22 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_23 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_24 & \multirow{-4}{*}{\centering\arraybackslash 14 September 2017} & \multirow{-4}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_25 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_26 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_27 &  &  & 3 – 4 & Lower Middle\\
+\nopagebreak
+MM\_28 & \multirow{-4}{*}{\centering\arraybackslash 11 October 2017} & \multirow{-4}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_29 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_30 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_31 &  &  & 3 – 4 & Lower Middle\\
+\nopagebreak
+MM\_32 & \multirow{-4}{*}{\centering\arraybackslash 11 October 2017} & \multirow{-4}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_33 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_34 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_35 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_36 & \multirow{-4}{*}{\centering\arraybackslash 22 November 2017} & \multirow{-4}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_37 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_38 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_39 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_40 & \multirow{-4}{*}{\centering\arraybackslash 22 November 2017} & \multirow{-4}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_41 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_42 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_43 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_44 & \multirow{-4}{*}{\centering\arraybackslash 13 December 2017} & \multirow{-4}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_45 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_46 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_47 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_48 & \multirow{-4}{*}{\centering\arraybackslash 13 December 2017} & \multirow{-4}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_49 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_50 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_51 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_52 & \multirow{-4}{*}{\centering\arraybackslash 12 February 2018} & \multirow{-4}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_53 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_54 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_55 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_56 & \multirow{-4}{*}{\centering\arraybackslash 12 February 2018} & \multirow{-4}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_58 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_59 &  &  & 5 – 6 & Lower Middle\\
+\nopagebreak
+MM\_60 & \multirow{-3}{*}{\centering\arraybackslash 26 March 2018} & \multirow{-3}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_61 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_62 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_64 & \multirow{-3}{*}{\centering\arraybackslash 26 March 2018} & \multirow{-3}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_65 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_66 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_67 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_68 & \multirow{-4}{*}{\centering\arraybackslash 23 April 2018} & \multirow{-4}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_69 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_70 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_71 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_72 & \multirow{-4}{*}{\centering\arraybackslash 23 April 2018} & \multirow{-4}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_73 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_74 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_75 &  &  & 3 – 4 & Lower Middle\\
+\nopagebreak
+MM\_76 & \multirow{-4}{*}{\centering\arraybackslash 21 May 2018} & \multirow{-4}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_77 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_78 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_79 &  &  & 3 – 4 & Lower Middle\\
+\nopagebreak
+MM\_80 & \multirow{-4}{*}{\centering\arraybackslash 21 May 2018} & \multirow{-4}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_81 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_82 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_83 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_84 & \multirow{-4}{*}{\centering\arraybackslash 18 June 2018} & \multirow{-4}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_85 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_86 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_87 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_88 & \multirow{-4}{*}{\centering\arraybackslash 18 June 2018} & \multirow{-4}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_89 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_90 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_91 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_92 & \multirow{-4}{*}{\centering\arraybackslash 9 July 2018} & \multirow{-4}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_93 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_94 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_95 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_96 & \multirow{-4}{*}{\centering\arraybackslash 9 July 2018} & \multirow{-4}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_97 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_98 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_99 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_100 & \multirow{-4}{*}{\centering\arraybackslash 8 August 2018} & \multirow{-4}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_101 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_102 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_103 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_104 & \multirow{-4}{*}{\centering\arraybackslash 8 August 2018} & \multirow{-4}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_105 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_106 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_107 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_108 & \multirow{-4}{*}{\centering\arraybackslash 3 September 2018} & \multirow{-4}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_109 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_110 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_111 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_112 & \multirow{-4}{*}{\centering\arraybackslash 3 September 2018} & \multirow{-4}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_113 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_114 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_115 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_116 & \multirow{-4}{*}{\centering\arraybackslash 4 October 2018} & \multirow{-4}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
+\cmidrule{1-5}\pagebreak[0]
+MM\_117 &  &  & 0 – 1 & Top\\
+\nopagebreak
+MM\_118 &  &  & 2 – 3 & Upper Middle\\
+\nopagebreak
+MM\_119 &  &  & 4 – 5 & Lower Middle\\
+\nopagebreak
+MM\_120 & \multirow{-4}{*}{\centering\arraybackslash 4 October 2018} & \multirow{-4}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\*
+\end{longtable}
+\endgroup{}
+
+% End the singlespace environment
+\end{singlespace}
+
+\newpage
+
+\blandscape
+
+
+
+\begin{table}[!h]
+\centering
+\caption{\label{tab:metagenomes}Sample ID, sampling site, sediment layer and depth, sampling date, number of raw sequence pairs, number of assembled contigs by MEGAHIT, N50 and L50 assembly statistics, number of predicted CDSs by Prodigal, and number of eggNOG-mapper annotated CDSs.}
+\centering
+\fontsize{10}{12}\selectfont
+\begin{tabular}[t]{>{\centering\arraybackslash}m{4.3 em}ccc>{\centering\arraybackslash}m{6.4 em}>{\centering\arraybackslash}m{4.3 em}cc>{\centering\arraybackslash}m{4.3 em}>{\centering\arraybackslash}m{4.3 em}}
+\toprule
+\textbf{Sample ID} & \textbf{Site} & \textbf{Layer (Depth)} & \textbf{Date} & \textbf{No. of Raw Sequence Pairs} & \textbf{No. of Contigs} & \textbf{N50\textsuperscript{*}} & \textbf{L50 (bp)\textsuperscript{*}} & \textbf{No. of Predicted CDSs} & \textbf{No. of Annotated CDSs}\\
+\midrule
+356 &  & Top (0 - 1 cm) &  & 205,085,833 & 32,026,408 & 8,760,379 & 601 & 40,693,178 & 29,364,186\\
+
+358 & \multirow{-2}{*}{\centering\arraybackslash Vegetated} & Lower Middle (4 - 5 cm) & \multirow{-2}{*}{\centering\arraybackslash 8 August 2018} & 209,632,803 & 33,248,196 & 9,111,820 & 590 & 42,249,295 & 29,892,039\\
+\cmidrule{1-10}
+360 &  & Top (0 - 1 cm) &  & 213,766,540 & 21,634,340 & 6,073,512 & 595 & 27,526,969 & 19,599,377\\
+
+362 & \multirow{-2}{*}{\centering\arraybackslash Nonvegetated} & Lower Middle (4 - 5 cm) & \multirow{-2}{*}{\centering\arraybackslash 8 August 2018} & 216,556,629 & 27,534,653 & 8,174,204 & 592 & 34,788,216 & 24,307,842\\
+\bottomrule
+\multicolumn{10}{l}{\rule{0pt}{1em}\textsuperscript{*} The notation was preserved from the original output of BBTools statswrapper.sh.}\\
+\end{tabular}
+\end{table}
+
+\elandscape
+
+\newpage
+
+
+
+\begin{table}[!h]
+\centering
+\caption{\label{tab:cog}The proportion of each COG functional category (NAAF) and the number of proteins assigned to each category. The proportion and the number of proteins assigned to category C (energy production and conversion) are highlighted.}
+\centering
+\fontsize{10}{12}\selectfont
+\begin{tabular}[t]{lrr}
+\toprule
+\textbf{COG Category} & \textbf{NAAF (\%)} & \textbf{Number of Proteins}\\
+\midrule
+\textbf{C – Energy production and conversion} & \textbf{15.18} & \textbf{8,224}\\
+S – Function unknown & 12.62 & 6,299\\
+G – Carbohydrate transport and metabolism & 11.45 & 6,823\\
+E – Amino acid transport and metabolism & 9.25 & 6,893\\
+M – Cell wall/membrane/envelope biogenesis & 8.89 & 2,999\\
+P – Inorganic ion transport and metabolism & 8.43 & 4,441\\
+Multiple functional categories & 7.65 & 2,603\\
+O – Posttranslational modification, protein turnover, chaperones & 7.02 & 2,901\\
+J – Translation, ribosomal structure and biogenesis & 5.28 & 1,507\\
+H – Coenzyme transport and metabolism & 2.29 & 1,494\\
+Q – Secondary metabolites biosynthesis, transport and catabolism & 2.26 & 1,356\\
+F – Nucleotide transport and metabolism & 1.78 & 1,475\\
+I – Lipid transport and metabolism & 1.72 & 1,421\\
+N – Cell motility & 1.38 & 599\\
+K – Transcription & 1.35 & 1,169\\
+U – Intracellular trafficking, secretion, and vesicular transport & 1.27 & 731\\
+L – Replication, recombination and repair & 0.98 & 397\\
+T – Signal transduction mechanisms & 0.79 & 574\\
+V – Defense mechanisms & 0.23 & 217\\
+D – Cell cycle control, cell division, chromosome partitioning & 0.18 & 147\\
+\addlinespace
+Total & 100.00 & 52,270\\
+\bottomrule
+\end{tabular}
+\end{table}
+\newpage
+
+
+
+\begin{table}[!h]
+\centering
+\caption{\label{tab:fermentation}Overview of selected enzymes, their enzymatic products, and corresponding KO entries used to evaluate mediation processes of various fermentation products.}
+\centering
+\fontsize{10}{12}\selectfont
+\begin{tabular}[t]{>{\centering\arraybackslash}p{16.0 em}>{\centering\arraybackslash}p{16.0 em}>{\centering\arraybackslash}p{11.0 em}}
+\toprule
+\textbf{Name} & \textbf{Product} & \textbf{KO Entry}\\
+\midrule
+ &  & K00169\\
+
+ &  & K00170\\
+
+ &  & K00171\\
+
+ &  & K00172\\
+
+\multirow{-5}{16.0 em}{\centering\arraybackslash Pyruvate:ferredoxin oxidoreductase} & \multirow{-5}{16.0 em}{\centering\arraybackslash Acetyl-CoA, carbon dioxide} & K03737\\
+\cmidrule{1-3}
+Pyruvate formate-lyase & Acetyl-CoA, formate & K00656\\
+\cmidrule{1-3}
+Acetyl-CoA hydrolase & Acetate & K01067\\
+\cmidrule{1-3}
+Acetate kinase & Acetate & K00925\\
+\cmidrule{1-3}
+Acetoacetate decarboxylase & Acetone, carbon dioxide & K01574\\
+\cmidrule{1-3}
+ &  & K00001\\
+
+ &  & K04022\\
+
+ &  & K13951\\
+
+ &  & K13952\\
+
+ &  & K13954\\
+
+ &  & K13980\\
+
+ &  & K18857\\
+
+ &  & K00002\\
+
+ &  & K13979\\
+
+\multirow{-10}{16.0 em}{\centering\arraybackslash Alcohol dehydrogenase} & \multirow{-10}{16.0 em}{\centering\arraybackslash Ethanol} & K00114\\
+\cmidrule{1-3}
+ &  & K00122\\
+
+ &  & K00123\\
+
+ &  & K00124\\
+
+ &  & K00126\\
+
+ &  & K00127\\
+
+ &  & K22515\\
+
+ &  & K05299\\
+
+ &  & K15022\\
+
+ &  & K00125\\
+
+\multirow{-10}{16.0 em}{\centering\arraybackslash Formate dehydrogenase} & \multirow{-10}{16.0 em}{\centering\arraybackslash Carbon dioxide} & K22516\\
+\cmidrule{1-3}
+Lactate dehydrogenase & Lactate & K00016\\
+\cmidrule{1-3}
+Acetolactate decarboxylase & Acetoin, carbon dioxide & K01575\\
+\cmidrule{1-3}
+ &  & K11264\\
+
+\multirow{-2}{16.0 em}{\centering\arraybackslash Methylmalonyl-CoA decarboxylase} & \multirow{-2}{16.0 em}{\centering\arraybackslash Propionyl-CoA, carbon dioxide} & K01604\\
+\cmidrule{1-3}
+ &  & K20626\\
+
+\multirow{-2}{16.0 em}{\centering\arraybackslash Lactoyl-CoA dehydratase} & \multirow{-2}{16.0 em}{\centering\arraybackslash Acryloyl-CoA} & K20627\\
+\cmidrule{1-3}
+Propionaldehyde dehydrogenase & Propionyl-CoA & K13922\\
+\cmidrule{1-3}
+Butyrate kinase & Butyrate & K00929\\
+\cmidrule{1-3}
+ &  & K01034\\
+
+\multirow{-2}{16.0 em}{\centering\arraybackslash Butyryl-CoA:acetate CoA transferase} & \multirow{-2}{16.0 em}{\centering\arraybackslash Butyrate, acetyl-CoA} & K01035\\
+\bottomrule
+\end{tabular}
+\end{table}
+\newpage
+
+
+
+\begin{table}[!h]
+\centering
+\caption{\label{tab:metabolism}Overview of KEGG modules used for assessing various types of microbial metabolism.}
+\centering
+\fontsize{10}{12}\selectfont
+\begin{tabular}[t]{>{\centering\arraybackslash}p{20.0 em}>{\centering\arraybackslash}p{11.0 em}}
+\toprule
+\textbf{Type of Metabolism} & \textbf{KEGG Module}\\
+\midrule
+ & M00567\\
+
+ & M00357\\
+
+ & M00356\\
+
+\multirow{-4}{20.0 em}{\centering\arraybackslash Methanogenesis} & M00563\\
+\cmidrule{1-2}
+Methane oxidation & M00174\\
+\cmidrule{1-2}
+Nitrogen fixation & M00175\\
+\cmidrule{1-2}
+Assimilatory nitrate reduction & M00531\\
+\cmidrule{1-2}
+Dissimilatory nitrate reduction & M00530\\
+\cmidrule{1-2}
+Denitrification & M00529\\
+\cmidrule{1-2}
+Nitrification & M00528\\
+\cmidrule{1-2}
+Complete nitrification, comammox & M00804\\
+\cmidrule{1-2}
+Anammox & M00973\\
+\cmidrule{1-2}
+Assimilatory sulphate reduction & M00176\\
+\cmidrule{1-2}
+Dissimilatory sulphate reduction & M00596\\
+\cmidrule{1-2}
+Thiosulfate oxidation by SOX complex & M00595\\
+\bottomrule
+\end{tabular}
+\end{table}
+\newpage
+
+
+
+\begin{table}[!h]
+\centering
+\caption{\label{tab:dsr}Enzymes involved in dissimilatory sulphate reduction and their KO entries.}
+\centering
+\fontsize{10}{12}\selectfont
+\begin{tabular}[t]{>{\centering\arraybackslash}p{20.0 em}>{\centering\arraybackslash}p{11.0 em}}
+\toprule
+\textbf{Name} & \textbf{KO Entry}\\
+\midrule
+Sulphate adenylyltransferase & K00958\\
+\cmidrule{1-2}
+ & K00394\\
+
+\multirow{-2}{20.0 em}{\centering\arraybackslash Adenylylsulphate reductase} & K00395\\
+\cmidrule{1-2}
+ & K11180\\
+
+ & K11181\\
+
+\multirow{-3}{20.0 em}{\centering\arraybackslash Dissimilatory sulphite reductase} & K27196\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}
