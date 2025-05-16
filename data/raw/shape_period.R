@@ -6,5 +6,5 @@
 #
 ############################################################
 
-shape_period <- c("Before Decay" = 21,
-                  "Decay of Roots\nand Rhizomes" = 3)
+shape_period <- c("Before Decline" = NA,
+                  "Meadow Decline" = 3)

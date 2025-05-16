@@ -6,5 +6,5 @@
 #
 ############################################################
 
-stroke_period <- c("Before Decay" = 0.5,
-                   "Decay of Roots\nand Rhizomes" = 0.3)
+stroke_period <- c("Before Decline" = 0.5,
+                   "Meadow Decline" = 0.5)

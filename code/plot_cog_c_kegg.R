@@ -112,7 +112,7 @@ wilcox <- tibble(analysis = c(rep("atpE (ATPF0C)", times = 4),
                                "Upper Middle",
                                "Lower Middle",
                                "Bottom"), times = 3),
-                 groups = rep(list(c("Before Decay", "Decay of Roots\nand Rhizomes")), times = 12),
+                 groups = rep(list(c("Before Decline", "Meadow Decline")), times = 12),
                  n = rep(NA, times = 12),
                  W = rep(NA, times = 12),
                  p = rep(NA, times = 12))
@@ -170,7 +170,7 @@ wilcox <- wilcox %>%
                        TRUE ~ NA)) %>%
   # Add the column decay roots (values added are not used for the
   # p-value annotation positioning but are required by package ggsignif)
-  mutate(decay_roots = "Before Decay") %>%
+  mutate(decay_roots = "Before Decline") %>%
   # Format factor levels of KO names
   mutate(KO_name = factor(x = KO_name, levels = names(colour_kegg)))
 
@@ -190,7 +190,7 @@ p2 <- metadata_naaf_ko_names %>%
                     breaks = names(colour_kegg)) +
   scale_pattern_manual(name = NULL,
                        values = pattern_period,
-                       breaks = names(pattern_period["Decay of Roots\nand Rhizomes"])) +
+                       breaks = names(pattern_period)) +
   scale_y_continuous(breaks = custom_breaks,
                      limits = custom_limits,
                      expand = c(0, 0)) +

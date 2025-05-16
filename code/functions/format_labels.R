@@ -16,8 +16,8 @@ format_labels <- function(x = NULL) {
     mutate(layer = str_replace(layer, "^lower middle$", "Lower Middle")) %>%
     mutate(layer = str_replace(layer, "^bottom$", "Bottom")) %>%
     mutate(layer = factor(layer, levels = c("Top", "Upper Middle", "Lower Middle", "Bottom"))) %>%
-    mutate(decay_roots = str_replace(decay_roots, "^before$", "Before Decay")) %>%
-    mutate(decay_roots = str_replace(decay_roots, "^after$", "Decay of Roots\nand Rhizomes")) %>%
+    mutate(decay_roots = str_replace(decay_roots, "^before$", "Before Decline")) %>%
+    mutate(decay_roots = str_replace(decay_roots, "^after$", "Meadow Decline")) %>%
     mutate(date = as.Date(date, "%d.%m.%Y")) %>%
     mutate(month = format(date, "%B")) %>%
     mutate(year = format(date, "%Y"))

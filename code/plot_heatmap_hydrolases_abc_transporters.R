@@ -74,9 +74,9 @@ p <- heatmap %>%
                                 abc_transporters = guide_colourbar(order = 2)),
                    aesthetics = c("hydrolases", "abc_transporters")) +
   scale_shape_manual(name = NULL,
-                     values = c("Before Decay" = 21,
-                                "Decay of Roots\nand Rhizomes" = 22)) +
-  labs(x = "Layer and Station", y = "") +
+                     values = c("Before Decline" = 21,
+                                "Meadow Decline" = 22)) +
+  labs(x = "Layer and Site", y = "") +
   facet_wrap(facets = vars(y_strip), nrow = 2, scales = "free_y",
              strip.position = "left", axes = "all_y") +
   force_panelsizes(rows = c(3 / 11, 8 / 11)) +
@@ -87,12 +87,15 @@ p <- heatmap %>%
   theme(axis.title.x = element_text(margin = margin(t = 5.5 * 2)),
         axis.text.x = element_text(hjust = 1.0, vjust = 0.5, angle = 90,
                                    margin = margin(t = 5.5 / 2, b = 5.5 / 2, unit = "pt")),
-        legend.spacing.y = unit(x = c(5.5 * 44.3, 5.5 * 1.0), units = "pt"),
-        strip.text.y = element_text(margin = margin(r = 5.5, unit = "pt"))) +
+        legend.spacing.y = unit(x = c(5.5 * 45.1, 5.5 * 1.0), units = "pt"),
+        # To position the strip labels above the panel, set this argument
+        # to "off" to allow the strip labels to extend beyond the panel boundaries
+        strip.clip = "off",
+        strip.text.y = element_text(margin = margin(r = 5.5 * -15, unit = "pt"))) +
   guides(shape = guide_legend(override.aes = list(size = 6.5))) +
   guides(x = "axis_nested")
 
-# Load the width data from the previously creatNULL# Load the width data from the previously created plot
+# Load the width data from the previously created plot
 # to ensure that the new plot has equal width
 load(file = "results/numerical/widths.Rdata")
 

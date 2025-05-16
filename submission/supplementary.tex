@@ -131,7 +131,7 @@
 % Captions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Use a period as separator between the label and the caption text,
+% Define the separator between the label and the caption text
 % and make the label bold
 \usepackage[labelsep=space, labelfont=bf]{caption}
 % Set caption text to be justified
@@ -195,7 +195,7 @@
   \apptocmd{\@title}{\par {\large #1 \par}}{}{}
 }
 \makeatother
-\subtitle{\textbf{Influence of seagrass decline on the metabolic profile of sediment microbial communities}}
+\subtitle{\textbf{Shift in the metabolic profile of sediment microbial communities during seagrass decline}}
 \author{}
 \date{\vspace{-2.5em}}
 
@@ -241,8 +241,6 @@ Tel.: +385 52 804 768
 
 e-mail: \href{mailto:marino.korlevic@irb.hr}{\nolinkurl{marino.korlevic@irb.hr}}
 
-Running title: Metabolic profile of seagrass sediment communities
-
 \sisetup{mode=text}
 \setlength\parindent{24pt}
 \newpage
@@ -259,12 +257,12 @@ Running title: Metabolic profile of seagrass sediment communities
 \begingroup\fontsize{10}{12}\selectfont
 
 \begin{longtable}[t]{ccccc}
-\caption{\label{tab:samples}Sample ID, sampling date and site, and sediment depth and layer for each protein sample with successfully obtained MS/MS spectra.}\\
+\caption{\label{tab:samples}Sample ID, sampling date and site, and sediment depth and layer for each protein sample. Samples for which no MS/MS spectra were obtained are indicated with an asterisk.}\\
 \toprule
 \textbf{Sample ID} & \textbf{Date} & \textbf{Site} & \textbf{Sediment Depth (cm)} & \textbf{Sediment Layer}\\
 \midrule
 \endfirsthead
-\caption[]{\label{tab:samples}Sample ID, sampling date and site, and sediment depth and layer for each protein sample with successfully obtained MS/MS spectra. \textit{(continued)}}\\
+\caption[]{\label{tab:samples}Sample ID, sampling date and site, and sediment depth and layer for each protein sample. Samples for which no MS/MS spectra were obtained are indicated with an asterisk. \textit{(continued)}}\\
 \toprule
 \textbf{Sample ID} & \textbf{Date} & \textbf{Site} & \textbf{Sediment Depth (cm)} & \textbf{Sediment Layer}\\
 \midrule
@@ -385,17 +383,21 @@ MM\_55 &  &  & 4 – 5 & Lower Middle\\
 \nopagebreak
 MM\_56 & \multirow{-4}{*}{\centering\arraybackslash 12 February 2018} & \multirow{-4}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
 \cmidrule{1-5}\pagebreak[0]
+MM\_57\textsuperscript{*} &  &  & 0 – 1 & Top\\
+\nopagebreak
 MM\_58 &  &  & 2 – 3 & Upper Middle\\
 \nopagebreak
 MM\_59 &  &  & 5 – 6 & Lower Middle\\
 \nopagebreak
-MM\_60 & \multirow{-3}{*}{\centering\arraybackslash 26 March 2018} & \multirow{-3}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
+MM\_60 & \multirow{-4}{*}{\centering\arraybackslash 26 March 2018} & \multirow{-4}{*}{\centering\arraybackslash Nonvegetated} & 7 – 8 & Bottom\\
 \cmidrule{1-5}\pagebreak[0]
 MM\_61 &  &  & 0 – 1 & Top\\
 \nopagebreak
 MM\_62 &  &  & 2 – 3 & Upper Middle\\
 \nopagebreak
-MM\_64 & \multirow{-3}{*}{\centering\arraybackslash 26 March 2018} & \multirow{-3}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
+MM\_63\textsuperscript{*} &  &  & 5 – 6 & Lower Middle\\
+\nopagebreak
+MM\_64 & \multirow{-4}{*}{\centering\arraybackslash 26 March 2018} & \multirow{-4}{*}{\centering\arraybackslash Vegetated} & 7 – 8 & Bottom\\
 \cmidrule{1-5}\pagebreak[0]
 MM\_65 &  &  & 0 – 1 & Top\\
 \nopagebreak
@@ -529,13 +531,13 @@ MM\_120 & \multirow{-4}{*}{\centering\arraybackslash 4 October 2018} & \multirow
 \toprule
 \textbf{Sample ID} & \textbf{Site} & \textbf{Layer (Depth)} & \textbf{Date} & \textbf{No. of Raw Sequence Pairs} & \textbf{No. of Contigs} & \textbf{N50\textsuperscript{*}} & \textbf{L50 (bp)\textsuperscript{*}} & \textbf{No. of Predicted CDSs} & \textbf{No. of Annotated CDSs}\\
 \midrule
-356 &  & Top (0 - 1 cm) &  & 205,085,833 & 32,026,408 & 8,760,379 & 601 & 40,693,178 & 29,364,186\\
+356 &  & Top (0 – 1 cm) &  & 205,085,833 & 32,026,408 & 8,760,379 & 601 & 40,693,178 & 29,364,186\\
 
-358 & \multirow{-2}{*}{\centering\arraybackslash Vegetated} & Lower Middle (4 - 5 cm) & \multirow{-2}{*}{\centering\arraybackslash 8 August 2018} & 209,632,803 & 33,248,196 & 9,111,820 & 590 & 42,249,295 & 29,892,039\\
+358 & \multirow{-2}{*}{\centering\arraybackslash Vegetated} & Lower Middle (4 – 5 cm) & \multirow{-2}{*}{\centering\arraybackslash 8 August 2018} & 209,632,803 & 33,248,196 & 9,111,820 & 590 & 42,249,295 & 29,892,039\\
 \cmidrule{1-10}
-360 &  & Top (0 - 1 cm) &  & 213,766,540 & 21,634,340 & 6,073,512 & 595 & 27,526,969 & 19,599,377\\
+360 &  & Top (0 – 1 cm) &  & 213,766,540 & 21,634,340 & 6,073,512 & 595 & 27,526,969 & 19,599,377\\
 
-362 & \multirow{-2}{*}{\centering\arraybackslash Nonvegetated} & Lower Middle (4 - 5 cm) & \multirow{-2}{*}{\centering\arraybackslash 8 August 2018} & 216,556,629 & 27,534,653 & 8,174,204 & 592 & 34,788,216 & 24,307,842\\
+362 & \multirow{-2}{*}{\centering\arraybackslash Nonvegetated} & Lower Middle (4 – 5 cm) & \multirow{-2}{*}{\centering\arraybackslash 8 August 2018} & 216,556,629 & 27,534,653 & 8,174,204 & 592 & 34,788,216 & 24,307,842\\
 \bottomrule
 \multicolumn{10}{l}{\rule{0pt}{1em}\textsuperscript{*} The notation was preserved from the original output of BBTools statswrapper.sh.}\\
 \end{tabular}

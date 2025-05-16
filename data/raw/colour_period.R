@@ -6,5 +6,5 @@
 #
 ############################################################
 
-colour_period <- c("Before Decay" = "#33A02C",
-                   "Decay of Roots\nand Rhizomes" = "#FFB90F")
+colour_period <- c("Before Decline" = "#33A02C",
+                   "Meadow Decline" = "#FFB90F")

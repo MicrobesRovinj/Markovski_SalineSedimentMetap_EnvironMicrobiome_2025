@@ -592,7 +592,7 @@ K00655	plsC; 1-acyl-sn-glycerol-3-phosphate acyltransferase [EC:2.3.1.51]
 K00656	E2.3.1.54, pflD; formate C-acetyltransferase [EC:2.3.1.54]
 K00657	speG, SAT; diamine N-acetyltransferase [EC:2.3.1.57]
 K00658	DLST, sucB; 2-oxoglutarate dehydrogenase E2 component (dihydrolipoamide succinyltransferase) [EC:2.3.1.61]
-K00659	BAAT; bile acid-CoA:amino acid N-acyltransferase [EC:2.3.1.65 3.1.2.2]
+K00659	BAAT; bile acid-CoA:amino acid N-acyltransferase [EC:2.3.1.65 3.1.2.27 3.1.2.2]
 K00660	CHS; chalcone synthase [EC:2.3.1.74]
 K00661	maa; maltose O-acetyltransferase [EC:2.3.1.79]
 K00662	aacC; aminoglycoside 3-N-acetyltransferase [EC:2.3.1.81]
@@ -800,7 +800,7 @@ K00880	lyxK; L-xylulokinase [EC:2.7.1.53]
 K00881	alsK; allose kinase [EC:2.7.1.55]
 K00882	fruK; 1-phosphofructokinase [EC:2.7.1.56]
 K00883	dgoK; 2-dehydro-3-deoxygalactonokinase [EC:2.7.1.58]
-K00884	NAGK, nagK; N-acetylglucosamine kinase [EC:2.7.1.59]
+K00884	NAGK; N-acetylglucosamine kinase [EC:2.7.1.59]
 K00885	nanK; N-acylmannosamine kinase [EC:2.7.1.60]
 K00886	ppgK; polyphosphate glucokinase [EC:2.7.1.63]
 K00887	dgkA; undecaprenol kinase [EC:2.7.1.66]
@@ -1646,7 +1646,7 @@ K01792	E5.1.3.15; glucose-6-phosphate 1-epimerase [EC:5.1.3.15]
 K01793	GLCE; heparosan-N-sulfate-glucuronate 5-epimerase [EC:5.1.3.17]
 K01794	DSE; chondroitin-glucuronate 5-epimerase [EC:5.1.3.19]
 K01795	algG; mannuronan 5-epimerase [EC:5.1.3.37]
-K01796	E5.1.99.4, AMACR, mcr; alpha-methylacyl-CoA racemase [EC:5.1.99.4]
+K01796	AMACR, mcr; alpha-methylacyl-CoA racemase [EC:5.1.99.4]
 K01798	alr-murF; Alr-MurF fusion protein [EC:5.1.1.1 6.3.2.10]
 K01799	nicE, maiA; maleate isomerase [EC:5.2.1.1]
 K01800	maiA, GSTZ1; maleylacetoacetate isomerase [EC:5.2.1.2]
@@ -1670,7 +1670,7 @@ K01818	fucI; L-fucose/D-arabinose isomerase [EC:5.3.1.25 5.3.1.3]
 K01819	E5.3.1.26, lacA, lacB; galactose-6-phosphate isomerase [EC:5.3.1.26]
 K01820	rhaA; L-rhamnose isomerase / sugar isomerase [EC:5.3.1.14 5.3.1.-]
 K01821	praC, xylH; 4-oxalocrotonate tautomerase [EC:5.3.2.6]
-K01822	E5.3.3.1; steroid Delta-isomerase [EC:5.3.3.1]
+K01822	ksi; steroid Delta-isomerase [EC:5.3.3.1]
 K01823	idi, IDI; isopentenyl-diphosphate Delta-isomerase [EC:5.3.3.2]
 K01824	EBP; cholestenol Delta-isomerase [EC:5.3.3.5]
 K01825	fadB; 3-hydroxyacyl-CoA dehydrogenase / enoyl-CoA hydratase / 3-hydroxybutyryl-CoA epimerase / enoyl-CoA isomerase [EC:1.1.1.35 4.2.1.17 5.1.2.3 5.3.3.8]
@@ -1736,7 +1736,7 @@ K01893	NARS, asnS; asparaginyl-tRNA synthetase [EC:6.1.1.22]
 K01894	gluQ; glutamyl-Q tRNA(Asp) synthetase [EC:6.1.1.-]
 K01895	ACSS1_2, acs; acetyl-CoA synthetase [EC:6.2.1.1]
 K01896	ACSM; medium-chain acyl-CoA synthetase [EC:6.2.1.2]
-K01897	ACSL, fadD; long-chain acyl-CoA synthetase [EC:6.2.1.3]
+K01897	ACSL, fadD; long-chain-fatty-acid---CoA ligase [EC:6.2.1.3]
 K01899	LSC1; succinyl-CoA synthetase alpha subunit [EC:6.2.1.4 6.2.1.5]
 K01900	LSC2; succinyl-CoA synthetase beta subunit [EC:6.2.1.4 6.2.1.5]
 K01902	sucD; succinyl-CoA synthetase alpha subunit [EC:6.2.1.5]
@@ -1904,7 +1904,7 @@ K02075	ABC.ZM.P; zinc/manganese transport system permease protein
 K02076	zurR, zur; Fur family transcriptional regulator, zinc uptake regulator
 K02077	ABC.ZM.S; zinc/manganese transport system substrate-binding protein
 K02078	acpP, acpM; acyl carrier protein
-K02079	agaA; N-acetylgalactosamine-6-phosphate deacetylase [EC:3.5.1.25]
+K02079	agaA; N-acetylgalactosamine-6-phosphate deacetylase [EC:3.5.1.-]
 K02080	agaI; putative deaminase/isomerase [EC:3.5.99.-]
 K02081	agaR; DeoR family transcriptional regulator, aga operon transcriptional repressor
 K02082	agaS; D-galactosamine 6-phosphate deaminase/isomerase [EC:3.5.99.-]
@@ -3384,7 +3384,7 @@ K03618	hyaF; hydrogenase-1 operon protein HyaF
 K03619	hyaE; hydrogenase-1 operon protein HyaE
 K03620	hyaC; Ni/Fe-hydrogenase 1 B-type cytochrome subunit
 K03621	plsX; phosphate acyltransferase [EC:2.3.1.274]
-K03622	ssh10b; archaea-specific DNA-binding protein
+K03622	albA, sso10b; DNA/RNA-binding protein Alba
 K03623	yhcO; ribonuclease inhibitor
 K03624	greA; transcription elongation factor GreA
 K03625	nusB; transcription antitermination protein NusB
@@ -6021,12 +6021,12 @@ K06414	spoVM; stage V sporulation protein M
 K06415	spoVR; stage V sporulation protein R
 K06416	spoVS; stage V sporulation protein S
 K06417	spoVID; stage VI sporulation protein D
-K06418	SASP-A, sspA; small acid-soluble spore protein A (major alpha-type SASP)
-K06419	SASP-B, sspB; small acid-soluble spore protein B (major beta-type SASP)
-K06420	sspC; small acid-soluble spore protein C (minor alpha/beta-type SASP)
-K06421	sspD; small acid-soluble spore protein D (minor alpha/beta-type SASP)
-K06422	sspE; small acid-soluble spore protein E (minor gamma-type SASP)
-K06423	sspF; small acid-soluble spore protein F (minor alpha/beta-type SASP)
+K06418	sspA; small acid-soluble spore protein A
+K06419	sspB; small acid-soluble spore protein B
+K06420	sspC; small acid-soluble spore protein C
+K06421	sspD; small acid-soluble spore protein D
+K06422	sspE; small acid-soluble spore protein E
+K06423	sspF; small acid-soluble spore protein F
 K06424	sspG; small acid-soluble spore protein G (minor)
 K06425	sspH; small acid-soluble spore protein H (minor)
 K06426	sspI; small acid-soluble spore protein I (minor)
@@ -7108,8 +7108,8 @@ K07524	RGS3; regulator of G-protein signalling 3
 K07525	NGEF, EPHEXIN, ARHGEF27; neuronal guanine nucleotide exchange factor
 K07526	SRGAP; SLIT-ROBO Rho GTPase activating protein
 K07527	FES, FPS; tyrosine-protein kinase Fes/Fps [EC:2.7.10.2]
-K07528	DPYSL2, CRMP2; dihydropyrimidinase-like 2
-K07529	DPYSL5, CRAM; dihydropyrimidinase-like 5
+K07528	DPYSL2, CRMP2; dihydropyrimidinase-related protein 2
+K07529	DPYSL5, CRAM; dihydropyrimidinase-related protein 5
 K07530	RHOD; Ras homolog gene family, member D
 K07531	RND1; Rho family GTPase 1
 K07532	ARHGEF12, LARG; Rho guanine nucleotide exchange factor 12
@@ -7600,7 +7600,7 @@ K08036	TCF1, HNF1A; transcription factor 1, hepatocyte nuclear factor 1-alpha
 K08037	NR2A2, HNF4G; hepatocyte nuclear factor 4-gamma
 K08038	FOXA3, HNF3G; forkhead box protein A3, hepatocyte nuclear factor 3-gamma
 K08039	IAPP; islet amyloid polypeptide
-K08040	BHLHB8, MIST1; class B basic helix-loop-helix protein 8
+K08040	BHLHA15, BHLHB8, MIST1, DIMM; class A basic helix-loop-helix protein 15
 K08041	ADCY1; adenylate cyclase 1 [EC:4.6.1.1]
 K08042	ADCY2; adenylate cyclase 2 [EC:4.6.1.1]
 K08043	ADCY3; adenylate cyclase 3 [EC:4.6.1.1]
@@ -8677,7 +8677,7 @@ K09140	TSR3; rRNA small subunit aminocarboxypropyltransferase [EC:2.5.1.157]
 K09141	K09141; uncharacterized protein
 K09142	SPOUT1; methyltransferase [EC:2.1.1.-]
 K09143	K09143; uncharacterized protein
-K09144	K09144; uncharacterized protein
+K09144	abiEii; nucleotidyl transferase AbiEii/AbiGii toxin family protein
 K09145	K09145; uncharacterized protein
 K09146	K09146; uncharacterized protein
 K09147	K09147; uncharacterized protein
@@ -9011,7 +9011,7 @@ K09487	HSP90B, TRA1; heat shock protein 90kDa beta
 K09488	TRAP1, HSP75; TNF receptor-associated protein 1
 K09489	HSPA4; heat shock 70kDa protein 4
 K09490	HSPA5, BIP; endoplasmic reticulum chaperone BiP [EC:3.6.4.10]
-K09491	STCH; stress 70 protein chaperone microsome-associated 60kDa protein
+K09491	HSPA13, STCH; heat shock 70kDa protein 13
 K09492	MKKS; McKusick-Kaufman syndrome protein
 K09493	CCT1, TCP1; T-complex protein 1 subunit alpha
 K09494	CCT2; T-complex protein 1 subunit beta
@@ -11484,7 +11484,7 @@ K12011	TRIM31; tripartite motif-containing protein 31 [EC:2.3.2.27]
 K12012	TRIM35; tripartite motif-containing protein 35
 K12013	TRIM36; tripartite motif-containing protein 36 [EC:2.3.2.27]
 K12014	TRIM38; tripartite motif-containing protein 38 [EC:2.3.2.27]
-K12015	TRIM39; tripartite motif-containing protein 39 [EC:2.3.2.27]
+K12015	TRIM39, BTR; tripartite motif-containing protein 39 / bloodthirsty-related gene family protein [EC:2.3.2.27]
 K12016	TRIM40; tripartite motif-containing protein 40
 K12017	TRIM41; tripartite motif-containing protein 41 [EC:2.3.2.27]
 K12018	TRIM42; tripartite motif-containing protein 42
@@ -13908,7 +13908,7 @@ K14487	GH3; auxin responsive GH3 gene family
 K14488	SAUR; SAUR family protein
 K14489	AHK2_3_4; arabidopsis histidine kinase 2/3/4 (cytokinin receptor) [EC:2.7.13.3]
 K14490	AHP; histidine-containing phosphotransfer peotein
-K14491	ARR-B; two-component response regulator ARR-B family
+K14491	ARR-B; GARP family transcription factor, ARR-B subfamily
 K14492	ARR-A; two-component response regulator ARR-A family
 K14493	GID1; gibberellin receptor GID1 [EC:3.-.-.-]
 K14494	DELLA; DELLA protein
@@ -14098,7 +14098,7 @@ K14680	K14680; putative RNA ligase [EC:6.5.1.-]
 K14681	argHA; argininosuccinate lyase / amino-acid N-acetyltransferase [EC:4.3.2.1 2.3.1.1]
 K14682	argAB; amino-acid N-acetyltransferase [EC:2.3.1.1]
 K14683	SLC34A, NPT, nptA; solute carrier family 34 (sodium-dependent phosphate cotransporter)
-K14684	SLC25A23S; solute carrier family 25 (mitochondrial phosphate transporter), member 23/24/25/41
+K14684	SLC25A23S; solute carrier family 25 (mitochondrial adenine nucleotide transporter), member 23/24/25/41
 K14685	SLC40A1, FPN1; solute carrier family 40 (iron-regulated transporter), member 1
 K14686	SLC31A1, CTR1; solute carrier family 31 (copper transporter), member 1
 K14687	SLC31A2, CTR2; solute carrier family 31 (copper transporter), member 2
@@ -14425,7 +14425,7 @@ K15009	SHANK; SH3 and multiple ankyrin repeat domains protein
 K15010	HOMER; homer
 K15011	regB, regS, actS; two-component system, sensor histidine kinase RegB [EC:2.7.13.3]
 K15012	regA, regR, actR; two-component system, response regulator RegA
-K15013	ACSBG; long-chain-fatty-acid--CoA ligase ACSBG [EC:6.2.1.3]
+K15013	ACSBG; long-chain-fatty-acid---CoA ligase [EC:6.2.1.3]
 K15014	SLC29A1_2_3, ENT1_2_3; solute carrier family 29 (equilibrative nucleoside transporter), member 1/2/3
 K15015	SLC32A, VGAT; solute carrier family 32 (vesicular inhibitory amino acid transporter)
 K15016	K15016; enoyl-CoA hydratase / 3-hydroxyacyl-CoA dehydrogenase [EC:4.2.1.17 1.1.1.35]
@@ -14519,7 +14519,7 @@ K15105	SLC25A12_13, AGC; solute carrier family 25 (mitochondrial aspartate/gluta
 K15106	SLC25A14_30; solute carrier family 25 (mitochondrial carrier), member 14/30
 K15107	SLC25A18_22, GC; solute carrier family 25 (mitochondrial glutamate transporter), member 18/22
 K15108	SLC25A19, DNC, TPC1; solute carrier family 25 (mitochondrial thiamine pyrophosphate transporter), member 19
-K15109	SLC25A20_29, CACT, CACL, CRC1; solute carrier family 25 (mitochondrial carnitine/acylcarnitine transporter), member 20/29
+K15109	SLC25A20, CACT, CAC, CRC1; solute carrier family 25 (mitochondrial carnitine/acylcarnitine transporter), member 20
 K15110	SLC25A21, ODC; solute carrier family 25 (mitochondrial 2-oxodicarboxylate transporter), member 21
 K15111	SLC25A26; solute carrier family 25 (mitochondrial S-adenosylmethionine transporter), member 26
 K15112	SLC25A27, UCP4; solute carrier family 25 (mitochondrial uncoupling protein), member 27
@@ -17773,7 +17773,7 @@ K18421	R2D2; R2D2
 K18422	MOV10; helicase MOV-10 [EC:5.6.2.5]
 K18423	CSE1, CAS, XPO2; exportin-2 (importin alpha re-exporter)
 K18424	ENPP4; ectonucleotide pyrophosphatase/phosphodiesterase family member 4 [EC:3.6.1.29]
-K18425	dhaa; 3-hydroxy-D-aspartate aldolase [EC:4.1.3.41]
+K18425	dhaa, bhcC; 3-hydroxy-D-aspartate aldolase [EC:4.1.3.41]
 K18426	ECHDC1; ethylmalonyl-CoA/methylmalonyl-CoA decarboxylase [EC:4.1.1.94 4.1.1.-]
 K18427	hpdB; 4-hydroxyphenylacetate decarboxylase large subunit [EC:4.1.1.83]
 K18428	hpdC; 4-hydroxyphenylacetate decarboxylase small subunit [EC:4.1.1.83]
@@ -21416,7 +21416,7 @@ K22087	mgdD; methylglutamate dehydrogenase subunit D [EC:1.5.99.5]
 K22088	N7OMT; norreticuline-7-O-methyltransferase [EC:2.1.1.-]
 K22089	STOX, DBOX; tetrahydroprotoberberine oxidase [EC:1.3.3.8]
 K22090	NR; noroxomaritidine/norcraugsodine reductase [EC:1.3.1.- 1.4.1.-]
-K22091	OMT; O-methyltransferase [EC:2.1.1.-]
+K22091	OMT; 7'-O-demethylcephaeline/cephaeline O-methyltransferase [EC:2.1.1.395 2.1.1.396 2.1.1.-]
 K22092	GLU1; ipecoside beta-D-glucosidase [EC:3.2.1.220]
 K22093	REPI; 1,2-dehydroreticuline synthase/reductase [EC:1.14.19.54 1.5.1.27]
 K22094	CYP82X2; (S)-1-hydroxy-N-methylcanadine 13-hydroxylase [EC:1.14.14.163]
@@ -22416,7 +22416,7 @@ K23088	STRA6; vitamin A receptor/transporter (stra6) family protein
 K23089	CCN5, WISP2; CCN family member 5
 K23090	CCN6, WISP3; CCN family member 6
 K23091	KREMEN; kremen protein
-K23092	MAB21L1; putative nucleotidyltransferase [EC:2.7.7.-]
+K23092	MAB21; mab-21 family protein
 K23093	USB1; U6 snRNA phosphodiesterase [EC:3.1.4.-]
 K23094	ABC4, menA; 2-carboxy-1,4-naphthoquinone phytyltransferase [EC:2.5.1.130]
 K23095	MENG, menG; demethylphylloquinol methyltransferase [EC:2.1.1.329]
@@ -25704,7 +25704,7 @@ K26384	SPTSS; serine palmitoyltransferase small subunit
 K26385	LHT; lysine histidine transporter
 K26386	SNORD115; small nucleolar RNA SNORD115
 K26387	RNU6ATAC; U6atac small nuclear RNA
-K26388	RNU4ATAC; U4 atac small nuclear RNA
+K26388	RNU4ATAC; U4atac small nuclear RNA
 K26389	TRAF3IP3; TRAF3-interacting JNK-activating modulator
 K26390	TNFAIP8; tumor necrosis factor alpha-induced protein 8
 K26391	STOML1, SLP1; stomatin-like protein 1
@@ -26144,7 +26144,7 @@ K26825	K26825; Demerecviridae exonuclease
 K26826	K26826; Clostridium phage peptidase
 K26828	K26828; Bacillus phage L-alanyl-D-glutamate peptidase
 K26829	K26829; Bacillus phage metallo-endopeptidase
-K26831	K26831; Megaviricetes etallopeptidase WLM
+K26831	K26831; Megaviricetes metallopeptidase WLM
 K26832	K26832; Kyanoviridae peptidase
 K26833	K26833; Marseillevirus papain-like cysteine peptidase
 K26835	K26835; Marseilleviridae peptidase
@@ -26481,12 +26481,17 @@ K27169	SCARNA13, U93; small Cajal body-specific RNA 13
 K27170	SCARNA14, U100; small Cajal body-specific RNA 14
 K27171	SCARNA17, U91; small Cajal body-specific RNA 17
 K27172	SCARNA18, U109; small Cajal body-specific RNA 18
+K27173	SNOR105_108; small nucleolar RNA snoR105/108
+K27174	SNOR113; small nucleolar RNA snoR113
+K27175	SNOR114, SNOR121; small nucleolar RNA snoR114
 K27176	SNORD86, U86; small nucleolar RNA SNORD86
 K27177	SNORD87 U87; small nucleolar RNA SNORD87
 K27178	SNORD89; small nucleolar RNA SNORD89
 K27179	ODAD5, CLXN, EFCAB1; outer dynein arm-docking complex subunit 5
 K27180	K27180; 2-epi-5-epi-valiolone dehydrogenase / demethylgadusol O-methyltransferase [EC:1.3.1.126 2.1.1.391]
 K27181	SNORD72; small nucleolar RNA SNORD72
+K27182	SNOR116; small nucleolar RNA snoR116
+K27183	SNOR117; small nucleolar RNA snoR117
 K27184	gtfC; 4,6-alpha-glucanotransferase (linear substrates/linear products) [EC:2.4.1.394]
 K27185	gtfO, gtfA; reuteransucrase [EC:2.4.1.395]
 K27186	gtfD; 4,6-alpha-glucanotransferase (linear and branched substrates, branched products) [EC:2.4.1.396]
@@ -27156,6 +27161,7 @@ K27850	DBTNBT; 3'-N-debenzoyltaxol N-benzoyltransferase [EC:2.3.1.321]
 K27851	K27851; Zierdtviridae head maturation protease
 K27852	K27852; Steigviridae aspartyl protease
 K27853	wcaG; UDP-N-acetyl-alpha-D-glucosaminuronate decarboxylase [EC:4.1.1.128]
+K27854	MAP70; microtubule-associated protein 70
 K27855	cndG; 1'-carboxy-chondrochloren decarboxylase [EC:4.1.1.129]
 K27856	LRRC23; leucine-rich repeat-containing protein 23
 K27857	CGS1; plant cystathionine gamma-synthase [EC:2.5.1.160]
@@ -27376,4 +27382,173 @@ K28072	dddX; DMSP lyase
 K28073	dddD; DMSP lyase
 K28074	ZNF862; zinc finger protein 862
 K28075	CACUL1; CDK2-associated and cullin domain-containing protein 1
+K28076	FTR; finTRIM family protein
+K28077	PRK; pollen receptor-like kinase [EC:2.7.11.1]
 K28078	APOLD1; apolipoprotein L domain-containing protein 1
+K28079	THI9; thiamine transporter
+K28080	METTL9; protein-L-histidine N-pros-methyltransferase [EC:2.1.1.-]
+K28081	SUMF2; inactive C-alpha-formylglycine-generating enzyme 2
+K28082	TNIP2; TNFAIP3-interacting protein 2
+K28083	ECD; protein ecdysoneless
+K28084	EID; EP300-interacting inhibitor of differentiation
+K28085	EPPK1; epiplakin
+K28086	CRMP1, DPYSL1; dihydropyrimidinase-related protein 1
+K28087	DPYSL3, CRMP4; dihydropyrimidinase-related protein 3
+K28088	DPYSL4, CRMP3; dihydropyrimidinase-related protein 4
+K28089	PEPR; leucine-rich repeat receptor-like protein kinase PEPR [EC:2.7.11.1 4.6.1.2]
+K28090	FH; formin
+K28091	PCAP; plasma membrane-associated cation-binding protein
+K28092	RUK; protein RUNKEL
+K28093	TOR1; microtubule-associated protein TORTIFOLIA1 and related proteins
+K28094	MBP2C; microtubule binding protein 2C
+K28095	WVD2, WDL; protein WAVE-DAMPENED 2 and related proteins
+K28096	AIR9; microtubule-associated protein AIR9
+K28097	ICR, RIP; interactor of constitutive active ROPs
+K28098	TANGO2; transport and Golgi organization protein 2
+K28099	FITM1; fat storage-inducing transmembrane protein 1
+K28100	FITM2; fat storage-inducing transmembrane protein 2 [EC:3.6.1.-]
+K28101	COPRS; coordinator of PRMT5 and differentiation stimulator
+K28102	COTL1, COAA; coactosin
+K28103	MME1; mitochondrial magnesium exporter 1
+K28104	MME1; mitochondrial magnesium exporter 1
+K28105	SLC25A29, CACL; solute carrier family 25 (mitochondrial basic amino acids transporter), member 29
+K28106	YMC; mitochondrial glycine transporter
+K28107	MFL1; protein mitoferrinlike 1, chloroplastic
+K28108	SHOC1; shortage in chiasmata 1
+K28109	CFAP90; cilia- and flagella-associated protein 90
+K28110	CIMIP2A, FAM166A; ciliary microtubule inner protein 2A
+K28111	CIMIP2B, FAM166B; ciliary microtubule inner protein 2B
+K28112	CIMIP2C, FAM166C; ciliary microtubule inner protein 2C
+K28113	PIERCE1; piercer of microtubule wall 1 protein
+K28114	PIERCE2; piercer of microtubule wall 2 protein
+K28115	CCPG1; cell cycle progression protein 1
+K28116	CDK5RAP3; CDK5 regulatory subunit-associated protein 3
+K28117	TEX264; testis-expressed protein 264
+K28118	ATG40; autophagy-related protein 40
+K28119	ATG39; autophagy-related protein 39
+K28120	PIGBOS1; protein PIGBOS1
+K28121	IFI35; interferon-induced 35 kDa protein
+K28122	NMI; N-myc-interactor
+K28123	INKA; PAK4-inhibitor INKA
+K28124	GCKR; glucokinase regulatory protein
+K28125	K28125; D-glucosamine-6-phosphate 4-epimerase [EC:5.1.3.42]
+K28126	K28126; phosphogalactosamine/phosphoglucosamine mutase [EC:5.4.2.13 5.4.2.10]
+K28127	AHSP; alpha-hemoglobin-stabilizing protein
+K28128	HYPK; huntingtin-interacting protein K
+K28129	GSKIP; GSK3B-interacting protein
+K28130	cc1; DNA binding protein, CC1 family
+K28131	fgs; geranylfarnesyl diphosphate synthase [EC:2.5.1.81]
+K28132	HEPACAM2; HEPACAM family member 2
+K28133	TEDC1; tubulin epsilon and delta complex protein 1
+K28134	TEDC2; tubulin epsilon and delta complex protein 2
+K28135	mc1; chromosomal protein MC1
+K28136	CIROP, LMLN2; ciliated left-right organizer metallopeptidase [EC:3.4.24.-]
+K28137	JAML; junctional adhesion molecule-like
+K28138	acrB; alcohol-forming fatty acyl-CoA reductase [EC:1.2.1.84]
+K28139	fcrA; alcohol-forming fatty acyl-CoA reductase [EC:1.2.1.84]
+K28140	acr1; fatty acyl-CoA reductase [EC:1.2.1.-]
+K28145	SYP; synaptophysin
+K28146	NHLRC2, SOQ1; NHL repeat-containing protein 2
+K28153	CDC123; translation initiation factor eIF2 assembly protein
+K28154	ARVCF; splicing regulator ARVCF
+K28155	PRAME; melanoma antigen preferentially expressed in tumors
+K28156	alaE; L-alanine exporter
+K28157	DACH; dachshund
+K28158	virS; AraC family transcriptional regulator, mymA operon recgulator
+K28159	lipR; putative acetyl-hydrolase
+K28160	sadH; putative oxidoreductase
+K28161	fadD13; long-chain-fatty-acid---CoA ligase [EC:6.2.1.3]
+K28162	vesA; VesA peptidase
+K28163	vesB; VesB peptidase
+K28164	vesC; VesC peptidase
+K28165	rrtA; rhombosortase
+K28166	ydcA; rhomboid protease YdcA [EC:3.4.21.-]
+K28167	SPRING1; SREBP regulating gene protein
+K28168	FAM107A; actin-associated protein FAM107A
+K28169	MIER1; mesoderm induction early response protein 1
+K28170	MIER2; mesoderm induction early response protein 2
+K28171	MIER3; mesoderm induction early response protein 3
+K28172	GLK, PRR2; GARP family transcription factor, GLK subfamily
+K28173	LUX; GARP family transcription factor, LUX subfamily
+K28174	KAN; GARP family transcription factor, KAN subfamily
+K28175	PHR, PHL, MYR; GARP family transcription factor, PHR1 subfamily
+K28176	NIGT1, HHO; GARP family transcription factor, NIGT1 subfamily
+K28177	NOL3, ARC; nucleolar protein 3
+K28178	bhcD; iminosuccinate reductase [EC:1.4.1.-]
+K28179	bhcA; glycine---oxaloacetate transaminase [EC:2.6.1.35]
+K28180	bhcB; beta-hydroxyaspartate dehydratase [EC:4.2.1.-]
+K28181	sdsR, ryeB; small regulatory RNA SdsR
+K28182	ryeA; small antisense RNA RyeA
+K28183	HSPA14; heat shock 70 kDa protein 14
+K28184	CHIC1; cysteine-rich hydrophobic domain-containing protein 1
+K28185	CHIC2; cysteine-rich hydrophobic domain-containing protein 2
+K28186	hepT; HepT family RNase toxin
+K28187	mntA; MntA family adenylyltransferase antitoxin
+K28188	tglT; guanylyltransferase TglT toxin
+K28189	takA; serine protein kinase TakA antitoxin
+K28190	socB; DNA replication inhibitor toxin SocB
+K28191	socA; antitoxin SocA
+K28192	glmU; glucosamine-1-phosphate N-acetyltransferase [EC:2.3.1.157]
+K28193	abiEi; AbiEi antitoxin C-terminal domain-containing protein
+K28194	LOH1_3; very-long-chain ceramide synthase [EC:2.3.1.297]
+K28195	LOH2; ceramide synthase [EC:2.3.1.291]
+K28196	TMEM65; transmembrane protein 65
+K28197	ILRUN; protein ILRUN
+K28198	GCSAM, HGAL; germinal center-associated signaling and motility protein
+K28199	MBLAC2; acyl-coenzyme A thioesterase MBLAC2 [EC:3.1.2.2]
+K28200	IER5; immediate early response gene 5
+K28201	IER2; immediate early response gene 2
+K28202	KRTCAP2, KCP2; dolichyl-diphosphooligosaccharide--protein glycosyltransferase subunit KCP2
+K28203	K28203; phosphoglycolate phosphatase [EC:3.1.3.18]
+K28204	K28204; glyoxylate aminotransferase [EC:2.6.1.-]
+K28205	E2.6.1.52; phosphoserine transaminase [EC:2.6.1.52]
+K28206	PDCL; phosducin-like protein
+K28207	nagK; N-acetylglucosamine kinase [EC:2.7.1.59]
+K28208	murK; N-acetylmuramate/N-acetylglucosamine kinase [EC:2.7.1.- 2.7.1.59]
+K28209	SAMD10_12, AVE; sterile alpha motif domain-containing protein 10/12
+K28210	KLHDC8B; kelch domain-containing protein 8B
+K28211	MAP10; microtubule-associated protein 10
+K28212	LEPROT, VPS55; OB-RGRP/VPS55 family protein
+K28213	KLHDC8A; kelch domain-containing protein 8A
+K28214	UGM; UDP-galactopyranose mutase [EC:5.4.99.9]
+K28215	OCIAD1, ASRIJ; OCIA domain-containing protein 1
+K28216	HIGD1A_C, RCF1a; HIG1 domain family member 1A/C, mitochondrial
+K28217	HIGD2A, RCF1b; HIG1 domain family member 2A, mitochondrial
+K28218	chsH3; 3-oxochol-4,22-dien-24-oyl-CoA hydratase (S-form) [EC:4.2.1.-]
+K28219	chsB1, hsd4A; (22S)-hydroxy-3-oxochol-4-en-24-oyl-CoA dehydrogenase [EC:1.1.1.-]
+K28220	scdG, IpdF; hydroxylacyl dehydrogenase [EC:1.1.-.-]
+K28221	scdC1, fadE33, ipdE2; 5OH-HIP-CoA dehydrogenase [EC:1.3.99.-]
+K28222	scdC2, fadE30, ipdE1; 5OH-HIP-CoA dehydrogenase [EC:1.3.99.-]
+K28223	trbI; conjugal transfer pilus assembly protein TrbI
+K28224	scdD; enoyl-CoA hydratase [EC:4.2.1.-]
+K28225	scdE; 3-hydroxyl acyl-CoA dehydrogenase [EC:1.1.-.-]
+K28226	scdK, ipdC; acyl-CoA dehydrogenase [EC:1.3.99.-]
+K28227	scdY, echA20; HIEC-CoA hydrolase [EC:4.1.-.-]
+K28228	scdL1, ipdA; COCHEA-CoA hydrolase alpha subunit [EC:4.1.-.-]
+K28229	scdL2, ipdB; COCHEA-CoA hydrolase beta subunit [EC:4.1.-.-]
+K28230	scdM1, fadE31; acyl-CoA dehydrogenase [EC:1.3.99.-]
+K28231	scdM2, fadE32; acyl-CoA dehydrogenase [EC:1.3.99.-]
+K28232	scdN; enoyl-CoA hydratase [EC:4.2.1.-]
+K28233	echA19; 3-oxochol-4,22-dien-24-oyl-CoA hydratase (R-form) [EC:4.2.1.-]
+K28234	HEMGN; hemogen
+K28235	FATE1; fetal and adult testis-expressed transcript protein
+K28236	NINJ; ninjurin
+K28237	SLC7A6OS, IWR1; RNA polymerase II nuclear localization protein
+K28238	DSK; drosulfakinin
+K28239	PDF; pigment-dispersing factor
+K28240	CCHa1; neuropeptide CCHamide-1
+K28241	CCHa2; neuropeptide CCHamide-2
+K28242	SIFa; neuropeptide SIFamide
+K28243	CRZ; pro-corazonin
+K28244	CAPA; cardio acceleratory peptide 2b
+K28245	ETH; ecdysis triggering hormone
+K28246	HUG; protein hugin
+K28247	sNPF; short neuropeptide F
+K28248	NPF; neuropeptide F
+K28249	EH; eclosion hormone
+K28250	CrzR; corazonin receptor
+K28251	AkhR; adipokinetic hormone receptor
+K28252	AKH; adipokinetic hormone
+K28261	LMBRD2; G-protein coupled receptor-associated protein LMBRD2
+K28281	TMEM270, WBSCR28; transmembrane protein 270
+K28284	KIAA1549; UPF0606 protein KIAA1549

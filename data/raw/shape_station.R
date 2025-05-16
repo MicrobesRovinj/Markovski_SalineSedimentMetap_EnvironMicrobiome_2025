@@ -8,5 +8,5 @@
 
 shape_station <- c("Vegetated" = 21,
                    "Nonvegetated" = 24,
-                   "Before Decay" = NULL,
-                   "Decay of Roots\nand Rhizomes" = 3)
+                   "Before Decline" = NULL,
+                   "Meadow Decline" = 3)

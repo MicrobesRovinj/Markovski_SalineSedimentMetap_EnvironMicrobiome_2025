@@ -83,14 +83,14 @@ p <- plot_grid(p_pcoa_nonvegetated_top$p_pcoa, p_pcoa_nonvegetated_top_cog$p_pco
 
 # Combine plots and labels
 p <- ggdraw() +
-  draw_label("All Proteins", x = 0.270, y = 0.965, hjust = 0.5,  fontfamily = "Times", fontface = "bold", size = 16) +
-  draw_label("Category C", x = 0.670, y = 0.965, hjust = 0.5,  fontfamily = "Times", fontface = "bold", size = 16) +
-  draw_label("Top", x = 0.035, y = 0.850, vjust = 0.5, hjust = 0.5, angle = 90, fontfamily = "Times", fontface = "bold", size = 16,) +
-  draw_label("Upper Middle", x = 0.035, y = 0.610, vjust = 0.5, hjust = 0.5, angle = 90, fontfamily = "Times", fontface = "bold", size = 16,) +
-  draw_label("Lower Middle", x = 0.035, y = 0.375, vjust = 0.5, hjust = 0.5, angle = 90, fontfamily = "Times", fontface = "bold", size = 16) +
-  draw_label("Bottom", x = 0.035, y = 0.140, vjust = 0.5, hjust = 0.5, angle = 90, fontfamily = "Times", fontface = "bold", size = 16) +
-  draw_plot(p, x = 0.040, y = 0.000, width = 0.80, height = 0.95) +
-  draw_plot(legend, x = 0.825, y = 0.055, width = 0, height = 1)
+  draw_label("All Proteins", x = 0.260, y = 0.965, hjust = 0.5,  fontfamily = "Times", fontface = "bold", size = 16) +
+  draw_label("Category C", x = 0.660, y = 0.965, hjust = 0.5,  fontfamily = "Times", fontface = "bold", size = 16) +
+  draw_label("Top", x = 0.025, y = 0.850, vjust = 0.5, hjust = 0.5, angle = 90, fontfamily = "Times", fontface = "bold", size = 16,) +
+  draw_label("Upper Middle", x = 0.025, y = 0.610, vjust = 0.5, hjust = 0.5, angle = 90, fontfamily = "Times", fontface = "bold", size = 16,) +
+  draw_label("Lower Middle", x = 0.025, y = 0.375, vjust = 0.5, hjust = 0.5, angle = 90, fontfamily = "Times", fontface = "bold", size = 16) +
+  draw_label("Bottom", x = 0.025, y = 0.140, vjust = 0.5, hjust = 0.5, angle = 90, fontfamily = "Times", fontface = "bold", size = 16) +
+  draw_plot(p, x = 0.030, y = 0.000, width = 0.80, height = 0.95) +
+  draw_plot(legend, x = 0.815, y = 0.055, width = 0, height = 1)
 
 # Save
 ggsave(filename = "results/figures/pcoa_layer.jpg", plot = p, width = 210, height = 297 * 0.85, units = "mm")

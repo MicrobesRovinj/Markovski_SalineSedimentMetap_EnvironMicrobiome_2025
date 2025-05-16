@@ -56,7 +56,7 @@ if (require("knitr")) {
   }
 
 # Avoid false positive error when using knitr::include_graphics()
-# (knitr release 1.28, https://github.com/yihui/knitr/release/tag/v1.28)
+# (knitr release 1.28, https://github.com/yihui/knitr/releases/tag/v1.28)
 include_graphics = function(...) {
     knitr::include_graphics(..., error = FALSE)
   }

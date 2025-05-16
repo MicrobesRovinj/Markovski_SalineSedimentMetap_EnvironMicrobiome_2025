@@ -43,9 +43,9 @@ fermentation$in_total_grouped <- fermentation$in_total_grouped %>%
   mutate(y_axis = str_replace(y_axis, "^pyruvate formate-lyase$", "Pyruvate\nFormate-Lyase"))
 dsr$in_total_grouped <- dsr$in_total_grouped %>%
   rename(y_axis = KEGG_ko) %>%
-  mutate(y_axis = str_replace(y_axis, "^sulphate adenylyltransferase$", "Sulphate\nadenylyltransferase")) %>%
-  mutate(y_axis = str_replace(y_axis, "^adenylylsulphate reductase$", "Adenylylsulphate\nreductase")) %>%
-  mutate(y_axis = str_replace(y_axis, "^dissimilatory sulphite reductase$", "Dissimilatory\nsulphite\nreductase"))
+  mutate(y_axis = str_replace(y_axis, "^sulphate adenylyltransferase$", "Sulphate\nAdenylyltransferase")) %>%
+  mutate(y_axis = str_replace(y_axis, "^adenylylsulphate reductase$", "Adenylylsulphate\nReductase")) %>%
+  mutate(y_axis = str_replace(y_axis, "^dissimilatory sulphite reductase$", "Dissimilatory\nSulphite\nReductase"))
 
 # Bind the calculated data
 heatmap <- bind_rows(Fermentation = fermentation$in_total_grouped,
@@ -61,9 +61,9 @@ heatmap <- heatmap %>%
                                                     "Alcohol\nDehydrogenase",
                                                     "Formate\nDehydrogenase",
                                                     "Lactate\nDehydrogenase",
-                                                    "Sulphate\nadenylyltransferase",
-                                                    "Adenylylsulphate\nreductase",
-                                                    "Dissimilatory\nsulphite\nreductase")))) %>%
+                                                    "Sulphate\nAdenylyltransferase",
+                                                    "Adenylylsulphate\nReductase",
+                                                    "Dissimilatory\nSulphite\nReductase")))) %>%
   mutate(layer = factor(x = layer, levels = c("Top", "Upper Middle", "Lower Middle", "Bottom"))) %>%
   mutate(y_strip = factor(x = y_strip, levels = c("Fermentation", "Dissimilatory\nSulphate Reduction")))
 
@@ -84,9 +84,9 @@ p <- heatmap %>%
                                 dsr = guide_colourbar(order = 2)),
                    aesthetics = c("fermentation", "dsr")) +
   scale_shape_manual(name = NULL,
-                     values = c("Before Decay" = 21,
-                                "Decay of Roots\nand Rhizomes" = 22)) +
-  labs(x = "Layer and Station", y = "") +
+                     values = c("Before Decline" = 21,
+                                "Meadow Decline" = 22)) +
+  labs(x = "Layer and Site", y = "") +
   facet_wrap(facets = vars(y_strip), nrow = 2, scales = "free_y",
              strip.position = "left", axes = "all_y") +
   force_panelsizes(rows = c(7 / 10, 3 / 10)) +
@@ -97,7 +97,7 @@ p <- heatmap %>%
   theme(axis.title.x = element_text(margin = margin(t = 5.5 * 2)),
         axis.text.x = element_text(hjust = 1.0, vjust = 0.5, angle = 90,
                                    margin = margin(t = 5.5 / 2, b = 5.5 / 2, unit = "pt")),
-        legend.spacing.y = unit(x = c(5.5 * 1.0, 5.5 * 1.0), units = "pt"),
+        legend.spacing.y = unit(x = c(5.5 * 0.85, 5.5 * 1.0), units = "pt"),
         strip.text.y = element_text(margin = margin(r = 5.5, unit = "pt"))) +
   guides(shape = guide_legend(override.aes = list(size = 6.5))) +
   guides(x = "axis_nested")

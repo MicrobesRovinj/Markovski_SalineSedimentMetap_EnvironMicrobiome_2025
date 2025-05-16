@@ -19,15 +19,15 @@ metaproteomic_data <- metaproteomic_data %>%
 # Add taxonomy according to the NCBI taxonomy ID 
 metaproteomic_data <- metaproteomic_data %>%
   mutate(to_tibble(x = getTaxonomy(NCBItaxonomyID, sqlFile = "data/references/nameNode.sqlite"),
-                   colnames = c("superkingdom", "phylum", "class", "order", "family", "genus", "species")))
+                   colnames = c("domain", "phylum", "class", "order", "family", "genus", "species")))
 
 # Remove entries without taxonomic classification or classified as Viruses and Eukaryota
 metaproteomic_data <- metaproteomic_data %>%
-  filter(superkingdom == "Archaea" | superkingdom == "Bacteria")
+  filter(domain == "Archaea" | domain == "Bacteria")
 
 # Rename DIAMOND taxonomy columns
 metaproteomic_data <- metaproteomic_data %>%
-  rename("DIAMOND_superkingdom" = "superkingdom") %>%
+  rename("DIAMOND_domain" = "domain") %>%
   rename("DIAMOND_phylum" = "phylum") %>%
   rename("DIAMOND_class" = "class") %>%
   rename("DIAMOND_order" = "order") %>%

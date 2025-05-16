@@ -45,20 +45,20 @@ alpha_stat <- alpha_stat %>%
   rename(group = groups) %>%
   unnest_wider(col = group, names_sep = "_") %>%
   # Add the starting x axis position of the p-value annotation
-  mutate(start = case_when(layer == "Top" & analysis == "Before Decay" & group_1 == "Vegetated" ~ 0.775,
-                           layer == "Upper Middle" & analysis == "Before Decay" & group_1 == "Vegetated" ~ 1.775,
-                           layer == "Lower Middle" & analysis == "Before Decay" & group_1 == "Vegetated" ~ 2.775,
-                           layer == "Bottom" & analysis == "Before Decay" & group_1 == "Vegetated" ~ 3.775,
-                           layer == "Lower Middle" & analysis == "Vegetated" & group_1 == "Before Decay" ~ 2.775,
-                           layer == "Bottom" & analysis == "Nonvegetated" & group_1 == "Before Decay" ~ 4.075,
+  mutate(start = case_when(layer == "Top" & analysis == "Before Decline" & group_1 == "Vegetated" ~ 0.775,
+                           layer == "Upper Middle" & analysis == "Before Decline" & group_1 == "Vegetated" ~ 1.775,
+                           layer == "Lower Middle" & analysis == "Before Decline" & group_1 == "Vegetated" ~ 2.775,
+                           layer == "Bottom" & analysis == "Before Decline" & group_1 == "Vegetated" ~ 3.775,
+                           layer == "Lower Middle" & analysis == "Vegetated" & group_1 == "Before Decline" ~ 2.775,
+                           layer == "Bottom" & analysis == "Nonvegetated" & group_1 == "Before Decline" ~ 4.075,
                            TRUE ~ NA)) %>%
   # Add the ending x axis position of the p-value annotation
-  mutate(end = case_when(layer == "Top" & analysis == "Before Decay" & group_2 == "Nonvegetated" ~ 1.075,
-                         layer == "Upper Middle" & analysis == "Before Decay" & group_2 == "Nonvegetated" ~ 2.075,
-                         layer == "Lower Middle" & analysis == "Before Decay" & group_2 == "Nonvegetated" ~ 3.075,
-                         layer == "Bottom" & analysis == "Before Decay" & group_2 == "Nonvegetated" ~ 4.075,
-                         layer == "Lower Middle" & analysis == "Vegetated" & group_2 == "Decay of Roots\nand Rhizomes" ~ 2.925,
-                         layer == "Bottom" & analysis == "Nonvegetated" & group_2 == "Decay of Roots\nand Rhizomes" ~ 4.225,
+  mutate(end = case_when(layer == "Top" & analysis == "Before Decline" & group_2 == "Nonvegetated" ~ 1.075,
+                         layer == "Upper Middle" & analysis == "Before Decline" & group_2 == "Nonvegetated" ~ 2.075,
+                         layer == "Lower Middle" & analysis == "Before Decline" & group_2 == "Nonvegetated" ~ 3.075,
+                         layer == "Bottom" & analysis == "Before Decline" & group_2 == "Nonvegetated" ~ 4.075,
+                         layer == "Lower Middle" & analysis == "Vegetated" & group_2 == "Meadow Decline" ~ 2.925,
+                         layer == "Bottom" & analysis == "Nonvegetated" & group_2 == "Meadow Decline" ~ 4.225,
                          TRUE ~ NA)) %>%
   # Add the y axis position of the p-value annotation
   mutate(y = case_when(parameter == "observed_number" ~ 42500,
@@ -69,7 +69,7 @@ alpha_stat <- alpha_stat %>%
   # Add the columns station and decay roots (values added are not used for the
   # p-value annotation positioning but are required by package ggsignif)
   mutate(station = "Vegetated") %>%
-  mutate(decay_roots = "Before Decay")
+  mutate(decay_roots = "Before Decline")
 
 # Load plot customisation data
 source(file = "data/raw/colour_station.R")
@@ -87,7 +87,7 @@ p <- alpha %>%
                     breaks = names(colour_station)) +
   scale_pattern_manual(name = NULL,
                        values = pattern_period,
-                       breaks = names(pattern_period["Decay of Roots\nand Rhizomes"])) +
+                       breaks = names(pattern_period)) +
   scale_y_continuous(breaks = custom_breaks,
                      limits = custom_limits,
                      expand = c(0, 0)) +

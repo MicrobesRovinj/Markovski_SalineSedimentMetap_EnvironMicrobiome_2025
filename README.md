@@ -1,6 +1,6 @@
-## Influence of seagrass decline on the metabolic profile of sediment microbial communities
+## Shift in the metabolic profile of sediment microbial communities during seagrass decline
  
-This is the repository for the manuscript "Influence of seagrass decline on the metabolic profile of sediment microbial communities" written by Marsej Markovski, Mirjana Najdek, Zihao Zhao, Gerhard J. Herndl, and Marino Korlević. The raw sequencing data have been deposited in the European Nucleotide Archive (ENA) at EMBL-EBI under accession number PRJEB75905, while the mass spectrometry proteomics data have been deposited in the ProteomeXchange Consortium via the PRIDE partner repository with the dataset identifier PXD054602. The analysis of these metagenomes and metaproteomes was performed separately and in advance using the Life Science Compute Cluster (LiSC; CUBE -- Computational Systems Biology, University of Vienna) and is not part of this repository. This README file contains an overview of the repository structure, information on software dependencies, and instructions how to reproduce and rerun the analysis using outputs from the metagenomic and metaproteomic analysis performed in advance.
+This is the repository for the manuscript "Shift in the metabolic profile of sediment microbial communities during seagrass decline" written by Marsej Markovski, Mirjana Najdek, Zihao Zhao, Gerhard J. Herndl, and Marino Korlević. The raw sequencing data have been deposited in the European Nucleotide Archive (ENA) at EMBL-EBI under accession number PRJEB75905, while the mass spectrometry proteomics data have been deposited in the ProteomeXchange Consortium via the PRIDE partner repository with the dataset identifier PXD054602. The analysis of these metagenomes and metaproteomes was performed separately and in advance using the Life Science Compute Cluster (LiSC; CUBE -- Computational Systems Biology, University of Vienna) and is not part of this repository. This README file contains an overview of the repository structure, information on software dependencies, and instructions how to reproduce and rerun the analysis using outputs from the metagenomic and metaproteomic analysis performed in advance.
 
 ### Overview
 
@@ -46,21 +46,21 @@ This is the repository for the manuscript "Influence of seagrass decline on the 
 #### Dependencies
 * GNU Bash (v. 4.2.46(2)), should be located in user's PATH
 * GNU Make (v. 4.3), should be located in user's PATH
-* R (v. 4.4.2), should be located in user's PATH
+* R (v. 4.5.0), should be located in user's PATH
 * R packages:
-  * `stats (v. 4.4.2)`
-  * `knitr (v. 1.46)`
-  * `rmarkdown (v. 2.26)`
-  * `bookdown (v. 0.40)`
-  * `tinytex (v. 0.50)`
+  * `stats (v. 4.5.0)`
+  * `knitr (v. 1.50)`
+  * `rmarkdown (v. 2.29)`
+  * `bookdown (v. 0.43)`
+  * `tinytex (v. 0.57)`
   * `kableExtra (v. 1.4.0)`
-  * `vegan (v. 2.6.4)`
+  * `vegan (v. 2.6.10)`
   * `RColorBrewer (v. 1.1.3)`
-  * `taxonomizr (v. 0.10.6)`
-  * `ggpattern (v. 1.1.1)`
+  * `taxonomizr (v. 0.11.1)`
+  * `ggpattern (v. 1.1.4)`
   * `cowplot (v. 1.1.3)`
-  * `rlang (v. 1.1.3)`
-  * `ggh4x (v. 0.2.8)`
+  * `rlang (v. 1.1.6)`
+  * `ggh4x (v. 0.3.0)`
   * `ggsignif (v. 0.6.4)`
   * `tidyverse (v. 2.0.0)`
 

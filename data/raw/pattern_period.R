@@ -6,5 +6,5 @@
 #
 ############################################################
 
-pattern_period <- c("Before Decay" = "none",
-                    "Decay of Roots\nand Rhizomes" = "stripe")
+pattern_period <- c("Before Decline" = "none",
+                    "Meadow Decline" = "stripe")

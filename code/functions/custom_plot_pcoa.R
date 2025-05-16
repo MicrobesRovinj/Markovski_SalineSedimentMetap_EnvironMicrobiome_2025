@@ -7,9 +7,8 @@
 #               code/functions/custom_pcoa.R
 #               data/raw/colour_layer.R
 #               data/raw/shape_period.R
-#               data/raw/colour_period.R
-#               data/raw/size_period.R
 #               data/raw/stroke_period.R
+#               data/raw/colour_period.R
 #               data/raw/shape_station.R
 #               data/raw/theme.R
 #
@@ -50,9 +49,8 @@ custom_plot_pcoa <- function(naaf, metadata, filter_station = NULL, filter_layer
   # Load plot customisation data
   source(file = "data/raw/colour_layer.R")
   source(file = "data/raw/shape_period.R")
-  source(file = "data/raw/colour_period.R")
-  source(file = "data/raw/size_period.R")
   source(file = "data/raw/stroke_period.R")
+  source(file = "data/raw/colour_period.R")
   source(file = "data/raw/shape_station.R")
 
   # Generate plot
@@ -61,9 +59,8 @@ custom_plot_pcoa <- function(naaf, metadata, filter_station = NULL, filter_layer
   # Case when selected stations are plotted
   if (length(filter_station) == 1) {
     if(is.null(filter_layer)) {
-      # Remove Before Decay entry from shape_period
-      shape_period <- shape_period[!names(shape_period) == "Before Decay"]
-    p_pcoa <- p_pcoa +
+      p_pcoa <- p_pcoa +
+      geom_point(data = pcoa$coordinates, aes(x = A1, y = A2, stroke = decay_roots), shape = 21, size = 4) +
       geom_point(data = pcoa$coordinates, aes(x = A1, y = A2, fill = layer), shape = 21, size = 4, stroke = 0.5) +
       geom_point(data = pcoa$coordinates, aes(x = A1, y = A2, shape = decay_roots), size = 5, stroke = 0.3) +
       scale_fill_manual(name = NULL,
@@ -72,26 +69,22 @@ custom_plot_pcoa <- function(naaf, metadata, filter_station = NULL, filter_layer
       scale_shape_manual(name = NULL,
                          breaks = names(shape_period),
                          values = shape_period) +
-      guides(fill = guide_legend(override.aes = list(size = 4), order = 1),
-             shape = guide_legend(override.aes = list(size = 5), order = 2))
+      scale_discrete_manual(aesthetics = "stroke",
+                            name = NULL,
+                            breaks = names(stroke_period),
+                            values = stroke_period) +
+      guides(fill = guide_legend(order = 1))
     # Case when selected stations and layers are plotted
     } else {
       p_pcoa <- p_pcoa +
         geom_point(data = pcoa$coordinates, aes(x = A1, y = A2, fill = decay_roots), shape = 21, size = 2.5, stroke = 0.5) +
-        geom_point(data = pcoa$coordinates, aes(x = A1, y = A2, shape = decay_roots, size = decay_roots, stroke = decay_roots)) +
+        geom_point(data = pcoa$coordinates, aes(x = A1, y = A2, shape = decay_roots), size = 3, stroke = 0.3) +
         scale_fill_manual(name = NULL,
                           breaks = names(colour_period),
                           values = colour_period) +
         scale_shape_manual(name = NULL,
                            breaks = names(shape_period),
                            values = shape_period) +
-        scale_size_manual(name = NULL,
-                          breaks = names(size_period),
-                          values = size_period) +
-        scale_discrete_manual(aesthetics = "stroke",
-                              name = NULL,
-                              breaks = names(stroke_period),
-                              values = stroke_period) +
         guides(shape = guide_legend(override.aes = list(size = 3.5)))
     }
   }

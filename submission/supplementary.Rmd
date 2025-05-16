@@ -1,11 +1,11 @@
 ---
 title: "**Supplementary material**"
-subtitle: "**Influence of seagrass decline on the metabolic profile of sediment microbial communities**"
+subtitle: "**Shift in the metabolic profile of sediment microbial communities during seagrass decline**"
 documentclass: article
 geometry: margin = 1.0in
 fontsize: 12 pt
-bibliography: references.bib
-csl: citation_style.csl #Get themes at https://github.com/citation-style-language/styles
+bibliography: ["references.bib", "packages.bib"]
+csl: citation_style.csl # Get themes at https://github.com/citation-style-language/styles
 output:
   bookdown::pdf_document2:
     includes:
@@ -79,8 +79,6 @@ Tel.: +385 52 804 768
 
 e-mail: [marino.korlevic\@irb.hr](mailto:marino.korlevic@irb.hr){.email}
 
-Running title: Metabolic profile of seagrass sediment communities
-
 ```{=latex}
 
 \sisetup{mode=text}
@@ -90,7 +88,7 @@ Running title: Metabolic profile of seagrass sediment communities
 ```
 ## Supplementary tables
 
-(ref:samples) Sample ID, sampling date and site, and sediment depth and layer for each protein sample with successfully obtained MS/MS spectra.
+(ref:samples) Sample ID, sampling date and site, and sediment depth and layer for each protein sample. Samples for which no MS/MS spectra were obtained are indicated with an asterisk.
 
 ```{=latex}
 
@@ -105,9 +103,11 @@ Running title: Metabolic profile of seagrass sediment communities
 # Load metadata
 metadata <- read_tsv(file = "data/raw/metadata.tsv")
 
-# Remove samples with failed MS/MS run
+# Label samples with failed MS/MS runs with an asterisk
 metadata <- metadata %>%
-  filter(msms_raw != "run_failure")
+  mutate(ID = if_else(msms_raw == "run_failure",
+                      str_replace(string = ID, pattern = "(.*)", replacement = "\\1\\\\textsuperscript{*}"),
+                      false = ID))
 
 # Format metadata entries
 metadata <- metadata %>%
@@ -117,7 +117,8 @@ metadata <- metadata %>%
   mutate(date = format(date, "%d %B %Y")) %>%
   mutate(date = str_replace(date, "^0", "")) %>%
   # Format sediment depth values
-  mutate(`depth_(cm)` = str_replace(`depth_(cm)`, "-", " – "))
+  mutate(`depth_(cm)` = str_replace(`depth_(cm)`, "-", " – ")) %>%
+  mutate(ID = str_replace(string = ID, pattern = "_", replacement = "\\\\_"))
 
 # Select the columns to be added to the table
 metadata <- metadata %>%
@@ -126,7 +127,7 @@ metadata <- metadata %>%
 # Create table
 kable(x = metadata, format = "latex",
       col.names = c("Sample ID", "Date", "Site", "Sediment Depth (cm)", "Sediment Layer"), align = "c",
-      caption = opts_current$get("tab.cap"), escape = TRUE, booktabs = TRUE,
+      caption = opts_current$get("tab.cap"), escape = FALSE, booktabs = TRUE,
       linesep = "", longtable = TRUE) %>%
   kable_styling(latex_options = c("hold_position", "repeat_header"), font_size = 10) %>%
   row_spec(row = 0, bold = TRUE) %>%
@@ -179,8 +180,8 @@ metagenomes <- metagenomes %>%
   mutate(station = case_when(sample == "356" | sample == "358" ~ "Vegetated",
                              sample == "360" | sample == "362" ~ "Nonvegetated",
                              TRUE                              ~ sample), .after = sample) %>%
-  mutate(layer_depth = case_when(sample == "356" | sample == "360" ~ "Top (0 - 1 cm)",
-                                 sample == "358" | sample == "362" ~ "Lower Middle (4 - 5 cm)",
+  mutate(layer_depth = case_when(sample == "356" | sample == "360" ~ "Top (0 – 1 cm)",
+                                 sample == "358" | sample == "362" ~ "Lower Middle (4 – 5 cm)",
                                  TRUE                              ~ sample), .after = station) %>%
   mutate(date = as.Date("08.08.2018", "%d.%m.%Y"), .after = station) %>%
   mutate(date = str_replace(string = format(date, "%d %B %Y"), pattern = "^0", replacement = ""))

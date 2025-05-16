@@ -194,7 +194,6 @@ $(FIGS)/pcoa_layer.jpg &: code/plot_pcoa_nonvegetated.R\
                           $(RAW)/colour_layer.R\
                           $(RAW)/shape_period.R\
                           $(RAW)/colour_period.R\
-                          $(RAW)/size_period.R\
                           $(RAW)/stroke_period.R\
                           $(RAW)/shape_station.R\
                           $(RAW)/theme.R
@@ -290,7 +289,6 @@ clean :
                              -not -name "pattern_period.R"\
                              -not -name "shape_period.R"\
                              -not -name "shape_station.R"\
-                             -not -name "size_period.R"\
                              -not -name "stroke_period.R"\
                              -not -name "cog_categories.tsv"\
                              -not -name "colour_kegg.R"\
